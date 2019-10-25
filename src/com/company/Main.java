@@ -30,7 +30,7 @@ class SimpleSortedInsert {
     public void execute() throws FileNotFoundException {
         // Get absolute path to unsorted dictionary
         Path root = Paths.get(".").normalize().toAbsolutePath();
-        String dictionary_path = root + "/unsorteddict.txt";
+        String dictionary_path = root + "/Files/unsorteddict.txt";
 
         File f = new File(dictionary_path);
         Scanner scan = new Scanner(f);
