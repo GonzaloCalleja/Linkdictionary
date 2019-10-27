@@ -3,14 +3,17 @@
 ### Instructions: 
 - Create a JAVA project to manage a dictionary built using Linked lists.
 * **Functionalities** :
-        - The application opens and reads line by line the file called "unsorteddict.txt".
-        - The application will read a new word each time a new line is read.
-        - Each time a new line is read, the new word is inserted in the correct position of a data structure that will be of a Linked list type.
-        - After the “unsorteddict.txt” has been fully read, the application will create another file called “sorteddict.txt” which will contain all the words (one word per line) alphabetically ordered
-        - The application accepts command line arguments.
+  * The application opens and reads line by line the file called "unsorteddict.txt".
+  * The application will read a new word each time a new line is read.
+  * Each time a new line is read, the new word is inserted in the correct position of a data structure that will be of a Linked list type.
+  * After the “unsorteddict.txt” has been fully read, the application will create another file called “sorteddict.txt” which will contain all the words (one word per line) alphabetically ordered
+  * The application accepts command line arguments.
 
 
-The important code in this program is in the ```src/com/company/SimpleSortedInsert.java```, the other classes in the repository are able to execute it from IntelliJ (src/com/company/Main.java) and to execute from the command prompt ( ```src/LinkedList.java```).
+* The important code in this program is in the ```src/com/company/SimpleSortedInsert.java```.
+* The other classes in the repository are able to execute it from:
+   * IntelliJ (```src/com/company/Main.java```) 
+   * Command prompt ( ```src/LinkedList.java```).
 
 ### Program explanation
 This program reads an unsorted file (Files/unsorteddict.txt) of words and uses an algorithm to sort these words into a LinkedList and then writes a file names _"sorteddict.txt"_ in the Files directory. When executed from the command line, the program takes up to 10 arguments of type int or String.
