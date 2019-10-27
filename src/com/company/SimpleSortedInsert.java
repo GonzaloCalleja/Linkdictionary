@@ -53,22 +53,57 @@ public class SimpleSortedInsert {
 
         long startingTime = System.currentTimeMillis();
         int index = 0;
-        while(scan.hasNextLine() && index<1000){
+        while(scan.hasNextLine() && index<1000000){
             String word = scan.nextLine();
             sorted_insert(word);
             index++;
-            // System.out.println(index);
+            System.out.println(index);
         }
 
         long elapsedTime = (System.currentTimeMillis() - startingTime);
         /*
         for(String word: dictionary){
             System.out.println(word);
-        }
+        }*/
         System.out.println(elapsedTime);
-         */
+
     }
 
+    public void sorted_insert(String word){
+        int pos = 0;
+        if (dictionary.size()==0){
+            dictionary.add(pos, word);
+            return;
+        }
+        if (word.compareToIgnoreCase(dictionary.getFirst())<0){
+            dictionary.add(pos, word);
+            return;
+        }
+        if (word.compareToIgnoreCase(dictionary.getLast())>0) {
+            pos = dictionary.size();
+            dictionary.add(pos, word);
+            return;
+        }
+
+        if (word.charAt(0) < 'l'){
+            for(String element : dictionary){
+                if (word.compareToIgnoreCase(element)<0){
+                    pos = dictionary.indexOf(element);
+                    break;
+                }
+            }
+        }else{
+            for(int i = dictionary.size()-1; i>=0; i--){
+                if (word.compareToIgnoreCase(dictionary.get(i))<0){
+                    pos = i;
+                    break;
+                }
+            }
+        }
+
+        dictionary.add(pos, word);
+    }
+    /*
     public void sorted_insert(String word){
 
         int pos = 0;
@@ -90,7 +125,7 @@ public class SimpleSortedInsert {
             }
             dictionary.add(pos, word);
         }
-    }
+    }*/
 
     private void write_to_file() throws IOException {
 
