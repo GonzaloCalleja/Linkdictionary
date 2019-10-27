@@ -25,7 +25,7 @@ If it is of type int, the program will print the word that has that index in the
 The SimpleSortedInsert class has three instance variables: 
 + root
 + input
-+ dictionary. 
++ dictionary
 
 _input_ and _dictionary_ are initialized in the two constructor methods, the only difference is that one of the constructors requires a String array as an argument for when the code is executed from the command line.
 
