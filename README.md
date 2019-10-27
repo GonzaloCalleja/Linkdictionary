@@ -1,6 +1,6 @@
 # Linkdictionary
 
-### Instructions: 
+### Instructions 
 - Create a JAVA project to manage a dictionary built using Linked lists.
 * **Functionalities** :
   * The application opens and reads line by line the file called "unsorteddict.txt".
