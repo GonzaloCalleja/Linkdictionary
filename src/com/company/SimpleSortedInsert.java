@@ -1,7 +1,5 @@
 package com.company;
 
-import com.sun.deploy.util.StringUtils;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,7 +18,12 @@ public class SimpleSortedInsert {
     Path root;
     String[] input;
 
-    public void SimpleSortedInsert(String[] args){
+    public SimpleSortedInsert(){
+        this.dictionary = new LinkedList<String>();
+        this.input = null;
+    }
+
+    public SimpleSortedInsert(String[] args){
         this.dictionary = new LinkedList<String>();
         this.input = args;
     }
@@ -28,10 +31,12 @@ public class SimpleSortedInsert {
     public void run() throws IOException {
         read_file();
         write_to_file();
-        String[] output = search_word_or_number();
+        if(input != null){
+            String[] output = search_word_or_number();
 
-        for (String element: output){
-            System.out.println(element);
+            for (String element: output){
+                System.out.println(element);
+            }
         }
     }
 
@@ -52,7 +57,7 @@ public class SimpleSortedInsert {
             String word = scan.nextLine();
             sorted_insert(word);
             index++;
-            System.out.println(index);
+            // System.out.println(index);
         }
 
         long elapsedTime = (System.currentTimeMillis() - startingTime);
@@ -65,9 +70,10 @@ public class SimpleSortedInsert {
     }
 
     public void sorted_insert(String word){
+
         int pos = 0;
         String temp = Normalizer.normalize(word, Normalizer.Form.NFD);
-        if (dictionary.size()==0){
+        if (this.dictionary.size() == 0){
             dictionary.add(pos, word);
         }else if (temp.compareToIgnoreCase(Normalizer.normalize(dictionary.getFirst(), Normalizer.Form.NFD))<0){
             dictionary.add(pos, word);
@@ -104,18 +110,31 @@ public class SimpleSortedInsert {
         int size = this.input.length;
         if (size>10){
             System.out.println("The maximum number of inputs is 10");
+            System.out.print("Inputs read: ");
             size = 10;
+            for(int i=0; i< 10; i++){
+                System.out.print(input[i] + " ");
+            }
+            System.out.println();
+
         }
         String[] result = new String[size];
 
         for (int i=0; i<size; i++){
             try{
                 int word_position = Integer.parseInt(this.input[i]);
-                String word = dictionary.get(word_position);
-                result[i] = word;
+                try {
+                    String word = dictionary.get(word_position-1);
+                    result[i] = word;
+                }catch(IndexOutOfBoundsException e){
+                    result[i] = "Index not in dictionary";
+                }
+
             }catch (NumberFormatException e){
                 int word_position = dictionary.indexOf(this.input[i]);
-                result[i] = Integer.toString(word_position);
+                if(word_position != -1) result[i] = Integer.toString(word_position + 1);
+                else result[i] = "-1";
+
             }catch (IndexOutOfBoundsException ignored){
                 ignored.printStackTrace();
             }
