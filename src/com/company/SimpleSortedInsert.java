@@ -6,10 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.Normalizer;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Scanner;
 
 public class SimpleSortedInsert {
@@ -19,8 +16,7 @@ public class SimpleSortedInsert {
     String[] input;
 
     public SimpleSortedInsert(){
-        this.dictionary = new LinkedList<String>();
-        this.input = null;
+        this(null);
     }
 
     public SimpleSortedInsert(String[] args){
@@ -57,7 +53,7 @@ public class SimpleSortedInsert {
             String word = scan.nextLine();
             sorted_insert(word);
             index++;
-            System.out.println(index);
+            //System.out.println(index);
         }
 
         long elapsedTime = (System.currentTimeMillis() - startingTime);
@@ -69,33 +65,41 @@ public class SimpleSortedInsert {
 
     }
 
+    // WORKS 3 mins plus - 159485
+/*
     public void sorted_insert(String word){
         int pos = 0;
+
         if (dictionary.size()==0){
             dictionary.add(pos, word);
             return;
         }
-        if (word.compareToIgnoreCase(dictionary.getFirst())<0){
+
+        int distance_first = word.compareToIgnoreCase(dictionary.getFirst());
+
+        if (distance_first<0){
             dictionary.add(pos, word);
             return;
         }
-        if (word.compareToIgnoreCase(dictionary.getLast())>0) {
+        int distance_last = word.compareToIgnoreCase(dictionary.getLast());
+        if (distance_last>0) {
             pos = dictionary.size();
             dictionary.add(pos, word);
             return;
         }
 
-        if (word.charAt(0) < 'l'){
-            for(String element : dictionary){
-                if (word.compareToIgnoreCase(element)<0){
+        if (Math.abs(distance_first) < Math.abs(distance_last)){
+            for(String element : dictionary) {
+                if (word.compareToIgnoreCase(element) < 0) {
                     pos = dictionary.indexOf(element);
                     break;
                 }
             }
-        }else{
-            for(int i = dictionary.size()-1; i>=0; i--){
-                if (word.compareToIgnoreCase(dictionary.get(i))<0){
-                    pos = i;
+        }else {
+            for (int i = dictionary.size() - 1; i >= 0; i--) {
+                String element = dictionary.get(i);
+                if (word.compareToIgnoreCase(element) > 0) {
+                    pos = dictionary.indexOf(element);
                     break;
                 }
             }
@@ -103,6 +107,33 @@ public class SimpleSortedInsert {
 
         dictionary.add(pos, word);
     }
+
+ */
+
+        // Works -158414
+
+    public void sorted_insert(String word){
+
+        int pos = 0;
+        if (this.dictionary.size() == 0){
+            dictionary.add(pos, word);
+        }else if (word.compareToIgnoreCase(dictionary.getFirst())<0){
+            dictionary.add(pos, word);
+        }else if (word.compareToIgnoreCase(dictionary.getLast())>0) {
+            pos = dictionary.size();
+            dictionary.add(pos, word);
+        }else {
+
+            for (String element : dictionary) {
+                if (word.compareToIgnoreCase(element) < 0) {
+                    pos = dictionary.indexOf(element);
+                    break;
+                }
+            }
+            dictionary.add(pos, word);
+        }
+    }
+
     /*
     public void sorted_insert(String word){
 
@@ -125,55 +156,82 @@ public class SimpleSortedInsert {
             }
             dictionary.add(pos, word);
         }
-    }*/
-
-    private void write_to_file() throws IOException {
-
-        PrintWriter outputStream = null;
-        outputStream = new PrintWriter(root + "/Files/sorteddict.txt","UTF-8");
-
-        for(String element: dictionary){
-            outputStream.println(element);
-        }
-
-        outputStream.close();
-
     }
 
-    public String[] search_word_or_number() {
+     */
 
-        int size = this.input.length;
-        if (size>10){
-            System.out.println("The maximum number of inputs is 10");
-            System.out.print("Inputs read: ");
-            size = 10;
-            for(int i=0; i< 10; i++){
-                System.out.print(input[i] + " ");
+        private void write_to_file () throws IOException {
+
+            PrintWriter outputStream = null;
+            outputStream = new PrintWriter(root + "/Files/sorteddict.txt", "UTF-8");
+
+            for (String element : dictionary) {
+                outputStream.println(element);
             }
-            System.out.println();
+
+            outputStream.close();
 
         }
-        String[] result = new String[size];
 
-        for (int i=0; i<size; i++){
-            try{
-                int word_position = Integer.parseInt(this.input[i]);
-                try {
-                    String word = dictionary.get(word_position-1);
-                    result[i] = word;
-                }catch(IndexOutOfBoundsException e){
-                    result[i] = "Index not in dictionary";
+        public String[] search_word_or_number () {
+
+            int size = this.input.length;
+            if (size > 10) {
+                System.out.println("The maximum number of inputs is 10");
+                System.out.print("Inputs read: ");
+                size = 10;
+                for (int i = 0; i < 10; i++) {
+                    System.out.print(input[i] + " ");
                 }
+                System.out.println();
 
-            }catch (NumberFormatException e){
-                int word_position = dictionary.indexOf(this.input[i]);
-                if(word_position != -1) result[i] = Integer.toString(word_position + 1);
-                else result[i] = "-1";
-
-            }catch (IndexOutOfBoundsException ignored){
-                ignored.printStackTrace();
             }
+            String[] result = new String[size];
+
+            for (int i = 0; i < size; i++) {
+                try {
+                    int word_position = Integer.parseInt(this.input[i]);
+                    try {
+                        String word = dictionary.get(word_position - 1);
+                        result[i] = word;
+                    } catch (IndexOutOfBoundsException e) {
+                        result[i] = "Index not in dictionary";
+                    }
+
+                } catch (NumberFormatException e) {
+                    int word_position = dictionary.indexOf(this.input[i]);
+                    if (word_position != -1) result[i] = Integer.toString(word_position + 1);
+                    else result[i] = "-1";
+
+                } catch (IndexOutOfBoundsException ignored) {
+                    ignored.printStackTrace();
+                }
+            }
+            return result;
         }
-        return result;
+        // 331246 milis 5 mins
+    /*
+    public void sorted_insert(String word){
+
+        int pos = 0;
+        if (this.dictionary.size() == 0){
+            dictionary.add(pos, word);
+        }else if (compareTo(dictionary.getFirst(), word)[1]>0){
+            dictionary.add(pos, word);
+        }else if (compareTo(dictionary.getLast(), word)[1]<0) {
+            pos = dictionary.size();
+            dictionary.add(pos, word);
+        }else {
+
+            for (String element : dictionary) {
+                if (compareTo(word, element)[1] < 0) {
+                    pos = dictionary.indexOf(element);
+                    break;
+                }
+            }
+            dictionary.add(pos, word);
+        }
     }
+     */
+
 }
