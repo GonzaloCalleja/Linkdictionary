@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import java.util.Scanner;
 
 public class SimpleSortedInsert {
@@ -39,6 +40,7 @@ public class SimpleSortedInsert {
     public void read_file() throws FileNotFoundException {
         // Get absolute path to unsorted dictionary
         root = Paths.get("").normalize().toAbsolutePath();
+
         if (root.endsWith("src")){
             root = root.getParent();
         }
@@ -110,26 +112,28 @@ public class SimpleSortedInsert {
 
  */
 
-        // Works -158414
+        // Works -158414, || 91701, 93562|| 60000
 
     public void sorted_insert(String word){
 
         int pos = 0;
         if (this.dictionary.size() == 0){
-            dictionary.add(pos, word);
-        }else if (word.compareToIgnoreCase(dictionary.getFirst())<0){
-            dictionary.add(pos, word);
+            dictionary.add(word);
+
         }else if (word.compareToIgnoreCase(dictionary.getLast())>0) {
-            pos = dictionary.size();
-            dictionary.add(pos, word);
+            dictionary.addLast(word);
         }else {
 
-            for (String element : dictionary) {
+            ListIterator<String> iterator = dictionary.listIterator();
+
+            while(iterator.hasNext()){
+                String element = iterator.next();
                 if (word.compareToIgnoreCase(element) < 0) {
-                    pos = dictionary.indexOf(element);
+                    pos = iterator.nextIndex() - 1;
                     break;
                 }
             }
+
             dictionary.add(pos, word);
         }
     }
