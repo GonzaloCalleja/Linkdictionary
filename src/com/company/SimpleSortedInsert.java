@@ -30,54 +30,145 @@ public class SimpleSortedInsert {
         if (root.endsWith("src")){
             root = root.getParent();
         }
-
-        String file_name = "unsorteddict";
-
-        boolean test = false;
-
-        if(args[0].equals("-1")){
-            file_name = "unsortedDictTest";
-            args = null;
-            test = true;
+        if(args !=null) {
+            String[] temp = new String[args.length -1];
+            for (String arg : args) {
+                if (arg.equals("-1")) {
+                    for (int i=0; i<temp.length; i++) {
+                        if (!args[i].equals("-1"))  temp[i] = arg;
+                    }
+                    args = temp;
+                    testDictionary(root, args);
+                    break;
+                }
+            }
         }
 
-        read_file(root, file_name);
-        write_to_file(root);
+        String file_name_unsorted = "unsorteddict";
+        read_file(root, file_name_unsorted);
+        String file_name_sorted = "sorteddict";
+        write_to_file(root, file_name_sorted);
 
         if(args !=null){
             for (String element: search_word_or_number(args)){
                 System.out.println(element);
             }
         }
-        if (test) testDictionary();
 
     }
 
-    private void testDictionary() throws FileNotFoundException {
-        System.out.println("test");
+    private void testDictionary(Path root, String[] args) throws IOException {
+        System.out.println("*********************");
+        System.out.println("TEST MODE ACTIVATED");
+        boolean testing = true;
 
-        Path root = Paths.get("").normalize().toAbsolutePath();
-        if (root.endsWith("src")){
-            root = root.getParent();
-        }
-        String dictionary_path = root + "/Files/" + "sortedDictTest" + ".txt";
+        File f1 = new File(root + "/Files/" + "sortedDictTest" + ".txt");
 
-        File f = new File(dictionary_path);
-        Scanner scan = new Scanner(f);
+        String file_name_unsorted = "unsortedDictTest";
+        read_file(root, file_name_unsorted);
+        String file_name_sorted = "sorted_to_test";
+        write_to_file(root, file_name_sorted);
 
-        int lines = 0;
+        File f2 = new File(root + "/Files/" + file_name_sorted + ".txt");
 
-        while(scan.hasNextLine()){
-            String word = scan.nextLine();
-            if (!word.equals(dictionary.get(lines))){
-                System.out.println("Error");
-                System.out.println(word + " " + dictionary.get(lines) + " is not equal, index " + lines);
-                break;
+        while (testing){
+            Scanner scan_reference = new Scanner(f1);
+            Scanner scan_sorted_by_program = new Scanner(f2);
+
+            System.out.println();
+            System.out.println("There are 4 possible tests, press the number to indicate which one you want:");
+            System.out.println("1) Check entire test file word by word");
+            System.out.println("2) Check with all arguments you already inputted");
+            System.out.println("3) Check with specific words or indexes you are interested in - user input wil be requested");
+            System.out.println("4) Check random words - the number of words will be given by the user");
+            System.out.println("  -- To exit & continue with the program type '-1' --");
+            Scanner user = new Scanner(System.in);
+            String test = user.next();
+
+            switch (test){
+                case "1":
+
+                    // Check 10,000 words of one dictionary to the other
+                    System.out.println("TEST 1: Checking all 10000 words are equal...");
+                    boolean test1 = true;
+                    int line = 0;
+                    while(scan_reference.hasNext() || scan_sorted_by_program.hasNext()){
+                        String reference = "null";
+                        if(!scan_reference.hasNext()){
+                            System.out.println("The dictionary created by the program has more words than the test dictionary.");
+                            System.out.println("Following are the missing words:");
+                            test1 = false;
+                        }else{
+                            reference = scan_sorted_by_program.nextLine();
+                        }
+
+                        String in_dictionary = "null";
+                        if(!scan_sorted_by_program.hasNext()){
+                            System.out.println("The dictionary created by the program is shorter than the test dictionary.");
+                            System.out.println("Following are the missing words:");
+                            test1 = false;
+                        }else{
+                            in_dictionary = scan_sorted_by_program.nextLine();
+                        }
+
+                        line++;
+                        if (!reference.equals(in_dictionary)){
+                            System.out.println("Error");
+                            System.out.print(" -> " + reference + " is not equal to: " + in_dictionary + " index: " + line);
+                            test1 = false;
+                        }
+                    }
+                    if (test1) System.out.println("TEST 1: Completed successfully");
+                    else System.out.println("TEST 1: Not completed successfully, check the code to see where the mistake is");
+
+                    break;
+                case "2":
+
+                    // Check original user input
+                    boolean test2 = true;
+                    System.out.println("TEST 2: Checking whether the arguments (excluding -1) you inputted are correctly positioned in the dictionary");
+
+
+                    if (test2) System.out.println("TEST 2: Completed successfully");
+                    else System.out.println("TEST 2: Not completed successfully, check the code to see where the mistake is");
+
+                    break;
+                case "3":
+
+                    // Check specific values the user is interested in
+                    boolean test3 = true;
+                    System.out.println("TEST 3: Please input some additional specific words or indexed that you want checked");
+                    System.out.println("Type '-1' to skip this test");
+
+
+                    if (test3) System.out.println("TEST 3: Completed successfully");
+                    else System.out.println("TEST 2: Not completed successfully, check the code to see where the mistake is");
+
+                    break;
+                case "4":
+
+                    // Check specific values the user is interested in
+                    boolean test4 = true;
+                    System.out.println("TEST 4: Please input a number of random words you want to be checked.");
+                    System.out.println("Type '-1' to skip this test");
+
+
+                    if (test4) System.out.println("TEST 4: Completed successfully");
+                    else System.out.println("TEST 4: Not completed successfully, check the code to see where the mistake is");
+
+                    break;
+                case "-1":
+                    testing = false;
+                    break;
+                default:
+                    System.out.println("Please input a number between 1 and 4.");
             }
-            lines++;
-            //System.out.println(lines);
+
         }
 
+        System.out.println("TEST MODE FINISHED");
+        System.out.println("The program will now execute as normal - sorting the full unsorted dictionary - without '-1' as an argument");
+        System.out.println("*********************");
     }
 
     public void read_file(Path root, String file_name) throws FileNotFoundException {
@@ -146,9 +237,9 @@ public class SimpleSortedInsert {
         }
     }
 
-        private void write_to_file (Path root) throws IOException {
+        private void write_to_file (Path root, String file_name) throws IOException {
 
-            PrintWriter outputStream = new PrintWriter(root + "/Files/sorteddict.txt", "UTF-8");
+            PrintWriter outputStream = new PrintWriter(root + "/Files/" + file_name + ".txt", "UTF-8");
 
             for (String element : dictionary) {
                 outputStream.println(element);
