@@ -39,15 +39,14 @@ class SkipList{
         if (index > size) return null;
         SkipNode current = head;
         for (int i=0; i<index; i++)current = current.forward[0];
-        return current.value;
+        return current.forward[0].value;
     }
 
     public int indexOf(String data){
         SkipNode current = head;
         for (int i=0; i<size; i++){
-            if(data.compareToIgnoreCase(current.forward[i].value) == 0){
-                return i+1;
-            }
+            if(data.compareToIgnoreCase(current.value) == 0) return i;
+            else current = current.forward[0];
         }
         return -1;
     }

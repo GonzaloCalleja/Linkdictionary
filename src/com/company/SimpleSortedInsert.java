@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 
+
 public class SimpleSortedInsert {
 
     SkipList dictionary;
@@ -44,6 +45,7 @@ public class SimpleSortedInsert {
                     }
                     args = temp;
                     testDictionary(root, args);
+                    dictionary = new SkipList();
                     break;
                 }
             }
@@ -161,7 +163,7 @@ public class SimpleSortedInsert {
 
                     for (int i=0; i<args.length ; i++){
                         // To allow for incorrectly ordered caps - in reference file they are ordered inconsistently
-                        if (!reference_test2[i][1].equals(in_dictionary_test2[i][1])){
+                        if (!reference_test2[i][1].equals(in_dictionary_test2[i][1]) || !reference_test2[i][0].equals(in_dictionary_test2[i][0]) ){
                         //if (reference[i][1].compareToIgnoreCase(in_dictionary[i][1]) != 0){
                             System.out.print("Error");
                             System.out.println(" -> Correct: " + reference_test2[i][0] + " - " + reference_test2[i][1] + " Incorrect: " + in_dictionary_test2[i][0] + " - " +  in_dictionary_test2[i][1]);
@@ -183,7 +185,8 @@ public class SimpleSortedInsert {
                     System.out.println("TEST 3: Please input some additional specific words or indexes separated by whitespaces that you want checked");
                     System.out.println("Type '-1' to skip this test");
 
-                    String[] input = user.next().split(" ");
+                    user.nextLine();
+                    String[] input = user.nextLine().split(" ");
 
                     String[][] in_dictionary_test3 = search_word_or_number(input, dictionary);
 
@@ -270,6 +273,20 @@ public class SimpleSortedInsert {
                     else System.out.println("\nTEST 4: Not completed successfully, check the code to see where the mistake is");
 
                     break;
+                case "5":
+                    System.out.println("Test execution time:");
+                    dictionary = new SkipList();
+                    long start1 = System.currentTimeMillis();
+                    read_file(root, "unsorteddict");
+                    long time1 = System.currentTimeMillis() - start1;
+                    System.out.println("In sorting 100,000 words: " + time1 + " miliseconds");
+
+                    dictionary = new SkipList();
+                    long start2 = System.currentTimeMillis();
+                    read_file(root, "unsortedDictTest");
+                    long time2 = System.currentTimeMillis() - start2;
+                    System.out.println("In sorting 10,000 words: " + time2 + " miliseconds");
+                    break;
                 case "-1":
                     testing = false;
                     break;
@@ -295,19 +312,10 @@ public class SimpleSortedInsert {
         File f = new File(dictionary_path);
         Scanner scan = new Scanner(f);
 
-        long startingTime = System.currentTimeMillis();
-
         while(scan.hasNextLine()){
             String word = scan.nextLine();
             sorted_insert(word);
         }
-
-        long elapsedTime = (System.currentTimeMillis() - startingTime);
-        /*
-        for(String word: dictionary){
-            System.out.println(word);
-        }*/
-        //System.out.println(elapsedTime);
 
     }
 
@@ -316,63 +324,60 @@ public class SimpleSortedInsert {
         dictionary.insert(word);
     }
 
-        private void write_to_file (Path root, String file_name) throws IOException {
+    private void write_to_file (Path root, String file_name) throws IOException {
 
-            PrintWriter outputStream = new PrintWriter(root + "/Files/" + file_name + ".txt", "UTF-8");
+        PrintWriter outputStream = new PrintWriter(root + "/Files/" + file_name + ".txt", "UTF-8");
+        while(dictionary.hasNext()){
+            outputStream.println(dictionary.next().value);
+        }
+        outputStream.close();
+    }
 
-            while(dictionary.hasNext()){
-                outputStream.println(dictionary.next().value);
+    public String[][] search_word_or_number (String[] input, SkipList dictionary) {
+
+        int max_size = 10;
+        for (String arg : args) {
+            if (arg.equals("-1")) {
+                max_size = 9;
             }
-
-            outputStream.close();
-
         }
 
-        public String[][] search_word_or_number (String[] input, SkipList dictionary) {
-
-            int max_size = 10;
-            for (String arg : args) {
-                if (arg.equals("-1")) {
-                    max_size = 9;
-                }
+        int size = input.length;
+        if (size > max_size) {
+            System.out.println("The maximum number of inputs is 10 or 9 on top of '-1'");
+            System.out.print("Inputs read: ");
+            size = 10;
+            for (int i = 0; i < 10; i++) {
+                System.out.print(input[i] + " ");
             }
+            System.out.println();
 
-            int size = input.length;
-            if (size > max_size) {
-                System.out.println("The maximum number of inputs is 10 or 9 on top of '-1'");
-                System.out.print("Inputs read: ");
-                size = 10;
-                for (int i = 0; i < 10; i++) {
-                    System.out.print(input[i] + " ");
-                }
-                System.out.println();
-
-            }
-            String regex = "\\d+";
-            String[][] result = new String[size][2];
-
-            for (int i = 0; i < size; i++) {
-                if(input[i].matches(regex)){
-                    int word_position = Integer.parseInt(input[i]) -1;
-
-                    try {
-                        String word = dictionary.getValue(word_position);
-                        result[i][0] = Integer.toString(word_position);
-                        result[i][1] = word;
-                    } catch (IndexOutOfBoundsException e) {
-                        result[i][0] = Integer.toString(word_position);
-                        result[i][1] = "Index not in dictionary";
-                    }
-                }else{
-                    int word_position = dictionary.indexOf(input[i]);
-                    if (word_position != -1) result[i][0] = Integer.toString(word_position + 1);
-                    else result[i][0] = "-1";
-
-                    result[i][1] = input[i];
-                }
-            }
-            return result;
         }
+        String regex = "\\d+";
+        String[][] result = new String[size][2];
+
+        for (int i = 0; i < size; i++) {
+            if(input[i].matches(regex)){
+                int word_position = Integer.parseInt(input[i]) ;
+
+                try {
+                    String word = dictionary.getValue(word_position - 1);
+                    result[i][0] = Integer.toString(word_position);
+                    result[i][1] = word;
+                } catch (IndexOutOfBoundsException e) {
+                    result[i][0] = Integer.toString(word_position);
+                    result[i][1] = "Index not in dictionary";
+                }
+            }else{
+                int word_position = dictionary.indexOf(input[i]);
+                if (word_position != -1) result[i][0] = Integer.toString(word_position);
+                else result[i][0] = "-1";
+
+                result[i][1] = input[i];
+            }
+        }
+        return result;
+    }
 
     public String[][] search_word_or_number (String[] input, LinkedList<String> dictionary) {
 
@@ -399,10 +404,10 @@ public class SimpleSortedInsert {
 
         for (int i = 0; i < size; i++) {
             if(input[i].matches(regex)){
-                int word_position = Integer.parseInt(input[i]) -1;
+                int word_position = Integer.parseInt(input[i]);
 
                 try {
-                    String word = dictionary.get(word_position);
+                    String word = dictionary.get(word_position-1);
                     result[i][0] = Integer.toString(word_position);
                     result[i][1] = word;
                 } catch (IndexOutOfBoundsException e) {
