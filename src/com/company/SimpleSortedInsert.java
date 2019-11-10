@@ -98,6 +98,7 @@ public class SimpleSortedInsert {
             System.out.println("2) Check with all arguments you already inputted");
             System.out.println("3) Check with specific words or indexes you are interested in - user input wil be requested");
             System.out.println("4) Check random words - the number of words will be given by the user");
+            System.out.println("5) Check program execution times with 10,000 words & 100,000 words");
             System.out.println("  -- To exit & continue with the program type '-1' --");
             Scanner user = new Scanner(System.in);
             String test = user.next();
@@ -277,13 +278,17 @@ public class SimpleSortedInsert {
                     System.out.println("Test execution time:");
                     dictionary = new SkipList();
                     long start1 = System.currentTimeMillis();
+                    // reading input from the file vs just surrounding the algorithm with timers is not noticeabl
                     read_file(root, "unsorteddict");
+                    //write_to_file(root, "sorteddict"); // ads an average of 10 miliseconds
                     long time1 = System.currentTimeMillis() - start1;
                     System.out.println("In sorting 100,000 words: " + time1 + " miliseconds");
 
                     dictionary = new SkipList();
                     long start2 = System.currentTimeMillis();
+                    // reading input from the file vs just surrounding the algorithm with timers is not noticeable
                     read_file(root, "unsortedDictTest");
+                    //write_to_file(root, "sorted_to_test"); // ads an average of 10 miliseconds
                     long time2 = System.currentTimeMillis() - start2;
                     System.out.println("In sorting 10,000 words: " + time2 + " miliseconds");
                     break;
