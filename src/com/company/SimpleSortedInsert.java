@@ -45,7 +45,6 @@ public class SimpleSortedInsert {
                     }
                     args = temp;
                     testDictionary(root, args);
-                    dictionary = new SkipList();
                     break;
                 }
             }
@@ -276,7 +275,6 @@ public class SimpleSortedInsert {
                     break;
                 case "5":
                     System.out.println("Test execution time:");
-                    dictionary = new SkipList();
                     long start1 = System.currentTimeMillis();
                     // reading input from the file vs just surrounding the algorithm with timers is not noticeabl
                     read_file(root, "unsorteddict");
@@ -284,7 +282,6 @@ public class SimpleSortedInsert {
                     long time1 = System.currentTimeMillis() - start1;
                     System.out.println("In sorting 100,000 words: " + time1 + " miliseconds");
 
-                    dictionary = new SkipList();
                     long start2 = System.currentTimeMillis();
                     // reading input from the file vs just surrounding the algorithm with timers is not noticeable
                     read_file(root, "unsortedDictTest");
@@ -312,15 +309,19 @@ public class SimpleSortedInsert {
 
     public void read_file(Path root, String file_name) throws FileNotFoundException {
 
+        dictionary = new SkipList();
         String dictionary_path = root + "/Files/" + file_name + ".txt";
 
         File f = new File(dictionary_path);
         Scanner scan = new Scanner(f);
 
+        long start = System.currentTimeMillis();
         while(scan.hasNextLine()){
             String word = scan.nextLine();
             sorted_insert(word);
         }
+        long time = System.currentTimeMillis() - start;
+        System.out.println(time);
 
     }
 

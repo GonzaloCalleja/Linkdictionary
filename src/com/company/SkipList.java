@@ -4,7 +4,8 @@ class SkipList{
 
     private int MaxLevel;
     private int maxLevelFrontier;
-    private double p = 0.25;
+    // for more consistent results than with 0.25
+    private double p = 0.5;
 
     private SkipNode iterator;
 
