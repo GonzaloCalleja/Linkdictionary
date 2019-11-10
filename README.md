@@ -39,6 +39,7 @@
 ### SkipList Explanation
 
 A list where each node contains an array of nodes that allow it to skip many nodes. Better than Binary Trees.
+[this](ftp://ftp.cs.umd.edu/pub/skipLists/skiplists.pdf)
 
 ### Program explanation
 This program reads an unsorted file (Files/unsorteddict.txt) of words and uses an algorithm to sort these words into a LinkedList and then writes a file names _"sorteddict.txt"_ in the Files directory. When executed from the command line, the program takes up to 10 arguments of type int or String.
