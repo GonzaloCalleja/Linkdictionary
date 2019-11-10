@@ -14,9 +14,15 @@ public class SimpleSortedInsert {
 
     SkipList dictionary;
     String[] args;
+    Path root;
 
     public SimpleSortedInsert(){
         this.dictionary = new SkipList();
+        root = Paths.get("").normalize().toAbsolutePath();
+
+        if (root.endsWith("src")){
+            root = root.getParent();
+        }
     }
 
     public SimpleSortedInsert(String[] args){
@@ -26,11 +32,6 @@ public class SimpleSortedInsert {
 
     public void run() throws IOException {
         // Get absolute path to unsorted dictionary
-        Path root = Paths.get("").normalize().toAbsolutePath();
-
-        if (root.endsWith("src")){
-            root = root.getParent();
-        }
 
         if(args !=null && args.length > 0) {
             String[] temp = new String[args.length -1];
@@ -44,7 +45,7 @@ public class SimpleSortedInsert {
                         }
                     }
                     args = temp;
-                    testDictionary(root, args);
+                    testDictionary(args);
                     break;
                 }
             }
@@ -52,9 +53,9 @@ public class SimpleSortedInsert {
 
         String file_name_unsorted = "unsorteddict";
         //String file_name_unsorted = "millionWords";
-        read_file(root, file_name_unsorted);
+        read_file(file_name_unsorted);
         String file_name_sorted = "sorteddict";
-        write_to_file(root, file_name_sorted);
+        write_to_file(file_name_sorted);
 
         if(args !=null && args.length > 0){
             System.out.print("Arguments: ");
@@ -69,7 +70,7 @@ public class SimpleSortedInsert {
 
     }
 
-    private void testDictionary(Path root, String[] args) throws IOException {
+    private void testDictionary(String[] args) throws IOException {
         System.out.println();
         System.out.println("***");
         System.out.println("*****");
@@ -82,9 +83,9 @@ public class SimpleSortedInsert {
         File f1 = new File(root + "/Files/" + "sortedDictTest" + ".txt");
 
         String file_name_unsorted = "unsortedDictTest";
-        read_file(root, file_name_unsorted);
+        read_file(file_name_unsorted);
         String file_name_sorted = "sorted_to_test";
-        write_to_file(root, file_name_sorted);
+        write_to_file(file_name_sorted);
 
         File f2 = new File(root + "/Files/" + file_name_sorted + ".txt");
 
@@ -131,8 +132,8 @@ public class SimpleSortedInsert {
                         }
 
                         // To allow for incorrectly ordered caps - in reference file they are ordered inconsistently
-                        if (!reference.equals(in_dictionary)){
-                        //if (reference.compareToIgnoreCase(in_dictionary) != 0){
+                        //if (!reference.equals(in_dictionary)){
+                        if (reference.compareToIgnoreCase(in_dictionary) != 0){
                             System.out.print("Error");
                             System.out.println(" -> Correct:" + reference + " - Incorrect:" + in_dictionary + " index: " + line);
                             test1 = false;
@@ -278,15 +279,15 @@ public class SimpleSortedInsert {
                     System.out.println("Test execution time:");
                     long start1 = System.currentTimeMillis();
                     // reading input from the file vs just surrounding the algorithm with timers is not noticeabl
-                    read_file(root, "unsorteddict");
-                    //write_to_file(root, "sorteddict"); // ads an average of 10 miliseconds
+                    read_file("unsorteddict");
+                    //write_to_file("sorteddict"); // ads an average of 10 miliseconds
                     long time1 = System.currentTimeMillis() - start1;
                     System.out.println("In sorting 100,000 words: " + time1 + " miliseconds");
 
                     long start2 = System.currentTimeMillis();
                     // reading input from the file vs just surrounding the algorithm with timers is not noticeable
-                    read_file(root, "unsortedDictTest");
-                    //write_to_file(root, "sorted_to_test"); // ads an average of 10 miliseconds
+                    read_file("unsortedDictTest");
+                    //write_to_file("sorted_to_test"); // ads an average of 10 miliseconds
                     long time2 = System.currentTimeMillis() - start2;
                     System.out.println("In sorting 10,000 words: " + time2 + " miliseconds");
                     break;
@@ -308,7 +309,7 @@ public class SimpleSortedInsert {
         System.out.println("***");
     }
 
-    public void read_file(Path root, String file_name) throws FileNotFoundException {
+    public void read_file(String file_name) throws FileNotFoundException {
 
         dictionary = new SkipList();
         String dictionary_path = root + "/Files/" + file_name + ".txt";
@@ -331,7 +332,7 @@ public class SimpleSortedInsert {
         dictionary.insert(word);
     }
 
-    private void write_to_file (Path root, String file_name) throws IOException {
+    private void write_to_file(String file_name) throws IOException {
 
         PrintWriter outputStream = new PrintWriter(root + "/Files/" + file_name + ".txt", "UTF-8");
         while(dictionary.hasNext()){
