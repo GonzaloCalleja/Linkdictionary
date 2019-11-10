@@ -51,6 +51,7 @@ public class SimpleSortedInsert {
         }
 
         String file_name_unsorted = "unsorteddict";
+        //String file_name_unsorted = "millionWords";
         read_file(root, file_name_unsorted);
         String file_name_sorted = "sorteddict";
         write_to_file(root, file_name_sorted);
