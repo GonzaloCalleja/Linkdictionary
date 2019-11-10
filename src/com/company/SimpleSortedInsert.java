@@ -6,17 +6,16 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.Random;
 import java.util.Scanner;
 
 public class SimpleSortedInsert {
 
-    LinkedList<String> dictionary;
+    SkipList dictionary;
     String[] args;
 
     public SimpleSortedInsert(){
-        this.dictionary = new LinkedList<String>();
+        this.dictionary = new SkipList();
     }
 
     public SimpleSortedInsert(String[] args){
@@ -296,14 +295,11 @@ public class SimpleSortedInsert {
         File f = new File(dictionary_path);
         Scanner scan = new Scanner(f);
 
-        int lines = 0;
         long startingTime = System.currentTimeMillis();
 
-        while(scan.hasNextLine() && lines<10000){
+        while(scan.hasNextLine()){
             String word = scan.nextLine();
-            sorted_insert(word, lines);
-            lines++;
-            //System.out.println(lines);
+            sorted_insert(word);
         }
 
         long elapsedTime = (System.currentTimeMillis() - startingTime);
@@ -316,58 +312,23 @@ public class SimpleSortedInsert {
     }
 
 
-    public void sorted_insert(String word, int lines){
-
-        if (lines == 0){
-            dictionary.add(word);
-        }else {
-            ListIterator<String> iterator;
-
-            int distance_first = Math.abs(word.compareToIgnoreCase(dictionary.getFirst()));
-            int distance_last = Math.abs(word.compareToIgnoreCase(dictionary.getLast()));
-
-            // solution so the algorithm works by ignoring all accents - 40000
-
-//            if(!StringUtils.stripAccents(word).equals(word)){
-//                word = StringUtils.stripAccents(word);
-//            }
-
-            if(distance_last < distance_first){
-                iterator = dictionary.listIterator(lines);
-                while(iterator.hasPrevious()){
-                    String element = iterator.previous();
-                    if (word.compareToIgnoreCase(element) > 0) {
-                        iterator.next();
-                        break;
-                    }
-                }
-            }else{
-                iterator = dictionary.listIterator(0);
-                while(iterator.hasNext()){
-                    String element = iterator.next();
-                    if (word.compareToIgnoreCase(element) < 0) {
-                        iterator.previous();
-                        break;
-                    }
-                }
-            }
-            iterator.add(word);
-        }
+    public void sorted_insert(String word){
+        dictionary.insert(word);
     }
 
         private void write_to_file (Path root, String file_name) throws IOException {
 
             PrintWriter outputStream = new PrintWriter(root + "/Files/" + file_name + ".txt", "UTF-8");
 
-            for (String element : dictionary) {
-                outputStream.println(element);
+            while(dictionary.hasNext()){
+                outputStream.println(dictionary.next().value);
             }
 
             outputStream.close();
 
         }
 
-        public String[][] search_word_or_number (String[] input, LinkedList<String> dictionary) {
+        public String[][] search_word_or_number (String[] input, SkipList dictionary) {
 
             int max_size = 10;
             for (String arg : args) {
@@ -395,7 +356,7 @@ public class SimpleSortedInsert {
                     int word_position = Integer.parseInt(input[i]) -1;
 
                     try {
-                        String word = dictionary.get(word_position);
+                        String word = dictionary.getValue(word_position);
                         result[i][0] = Integer.toString(word_position);
                         result[i][1] = word;
                     } catch (IndexOutOfBoundsException e) {
@@ -412,4 +373,50 @@ public class SimpleSortedInsert {
             }
             return result;
         }
+
+    public String[][] search_word_or_number (String[] input, LinkedList<String> dictionary) {
+
+        int max_size = 10;
+        for (String arg : args) {
+            if (arg.equals("-1")) {
+                max_size = 9;
+            }
+        }
+
+        int size = input.length;
+        if (size > max_size) {
+            System.out.println("The maximum number of inputs is 10 or 9 on top of '-1'");
+            System.out.print("Inputs read: ");
+            size = 10;
+            for (int i = 0; i < 10; i++) {
+                System.out.print(input[i] + " ");
+            }
+            System.out.println();
+
+        }
+        String regex = "\\d+";
+        String[][] result = new String[size][2];
+
+        for (int i = 0; i < size; i++) {
+            if(input[i].matches(regex)){
+                int word_position = Integer.parseInt(input[i]) -1;
+
+                try {
+                    String word = dictionary.get(word_position);
+                    result[i][0] = Integer.toString(word_position);
+                    result[i][1] = word;
+                } catch (IndexOutOfBoundsException e) {
+                    result[i][0] = Integer.toString(word_position);
+                    result[i][1] = "Index not in dictionary";
+                }
+            }else{
+                int word_position = dictionary.indexOf(input[i]);
+                if (word_position != -1) result[i][0] = Integer.toString(word_position + 1);
+                else result[i][0] = "-1";
+
+                result[i][1] = input[i];
+            }
+        }
+        return result;
+    }
 }
