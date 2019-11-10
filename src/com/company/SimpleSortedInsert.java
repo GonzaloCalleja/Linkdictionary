@@ -131,8 +131,8 @@ public class SimpleSortedInsert {
                         }
 
                         // To allow for incorrectly ordered caps - in reference file they are ordered inconsistently
-                        //if (!reference.equals(in_dictionary)){
-                        if (reference.compareToIgnoreCase(in_dictionary) != 0){
+                        if (!reference.equals(in_dictionary)){
+                        //if (reference.compareToIgnoreCase(in_dictionary) != 0){
                             System.out.print("Error");
                             System.out.println(" -> Correct:" + reference + " - Incorrect:" + in_dictionary + " index: " + line);
                             test1 = false;
