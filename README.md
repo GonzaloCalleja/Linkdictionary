@@ -1,19 +1,44 @@
 # Linkdictionary
 
 ### Instructions 
-- Create a JAVA project to manage a dictionary built using Linked lists.
+- Create a JAVA project that creates a sorted dictionary of words using linked lists and that can be executed from the command prompt accepting arguments, one of which will trigger a test using a previously sorted file as a reference.
+
 * **Functionalities** :
-  * The application opens and reads line by line the file called "unsorteddict.txt".
-  * The application will read a new word each time a new line is read.
-  * Each time a new line is read, the new word is inserted in the correct position of a data structure that will be of a Linked list type.
-  * After the “unsorteddict.txt” has been fully read, the application will create another file called “sorteddict.txt” which will contain all the words (one word per line) alphabetically ordered
-  * The application accepts command line arguments.
+  * The application opens and reads line by line a .txt file.
+  * Each line read is inserted into the dictionary in it's correct possition 
+   * accounting uniformly for Caps instead of ignoring them
+   * ignoring diacritics when sorting
+  * After the file has been fully read, the application will create another file in which it will introduce line by line the dictionary created
+  * When executed from the command line, the program accepts 10 arguments:
+   * Integers as arguments will output the word corresponding to that index
+   * Strings as arguments will output the index corresponding to that word
+   * '-1' as an argument will begin a testing process (once it is finalized, the program will resume as normal)
+      "test" is not used because it can be a word in the dictionary, and so it is a valid argument
 
+* **Program Details** :
+* The program uses the concept of SkipList instead of LinkedList for performance purposes. (This concept will be explained in a follwing section
 
-* The important code in this program is in the ```src/com/company/SimpleSortedInsert.java```.
-* The other classes in the repository are able to execute it from:
-   * IntelliJ (```src/com/company/Main.java```) 
-   * Command prompt ( ```src/LinkedList.java```).
+  EXPLANATION: The requirements ask for the dictionary's data structure to be a LinkedList but due to this objects structure this requirement limits the maximum speed the program can execute in, to aproximatelly 30 seconds for 100,000 lines with 1 LinkedList and a relatively efficient insert and ListIterator objects to read and write to the LinkList. The execution time is so slow because using algorithms that would have a Log(n) execution time in ArrayList and other data structures take n * Log(n) execution time in LinkedLists because to perform a "jump" in a LinkedList involves iterating through all previous nodes.
+
+* The File structure:
+    * Program Logic : ```src/com/company/SimpleSortedInsert.java```.
+    * SkipList implementation: ```src/com/company/SkipList.java``` & ```src/com/company/SkipNode.java```.
+    * Main Class to execute from IntelliJ: ```src/com/company/Main.java```.
+    * Main Class to execute from command prompt ```src/LinkedList.java```. (this is necessary because of intelliJ's structure)
+
+### Possible Improvements:
+* Place the test() method into a different class and execute it
+* Write test results into a report file & timers into it
+* Differentiate in between words with caps and no caps & ignore diacritics without eliminating them
+* Change SimpleSortedDictionary.java name
+* Add the possibility of testing with IntelliJ execution
+* Have SkipList Class extend LinkedList
+* Reduce the 2 search_user_input() methods into one efficient method
+* Find out if more efficiency is possible
+    
+### SkipList Explanation
+
+A list where each node contains an array of nodes that allow it to skip many nodes. Better than Binary Trees.
 
 ### Program explanation
 This program reads an unsorted file (Files/unsorteddict.txt) of words and uses an algorithm to sort these words into a LinkedList and then writes a file names _"sorteddict.txt"_ in the Files directory. When executed from the command line, the program takes up to 10 arguments of type int or String.
