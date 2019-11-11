@@ -63,7 +63,7 @@ public class SimpleSortedInsert {
                 System.out.print(arg + "  ");
             }
             System.out.println("\n");
-            for (String[] element: search_word_or_number(args, dictionary)){
+            for (String[] element: search_word_or_number(args)){
                 System.out.println(element[0] + " " + element[1]);
             }
         }
@@ -149,7 +149,7 @@ public class SimpleSortedInsert {
                     boolean test2 = true;
                     System.out.println("TEST 2: Checking whether the arguments (excluding -1) you inputted are correctly positioned in the dictionary");
 
-                    String[][] in_dictionary_test2 = search_word_or_number(args, dictionary);
+                    String[][] in_dictionary_test2 = search_word_or_number(args);
 
                     LinkedList<String> reference_list_test2 = new LinkedList<String>();
                     while(scan_reference.hasNext()){
@@ -190,7 +190,7 @@ public class SimpleSortedInsert {
                     user.nextLine();
                     String[] input = user.nextLine().split(" ");
 
-                    String[][] in_dictionary_test3 = search_word_or_number(input, dictionary);
+                    String[][] in_dictionary_test3 = search_word_or_number(input);
 
                     LinkedList<String> reference_list_test3 = new LinkedList<String>();
                     while(scan_reference.hasNext()){
@@ -248,7 +248,7 @@ public class SimpleSortedInsert {
                         to_check[i] = index;
                     }
 
-                    String[][] in_dictionary_test4 = search_word_or_number(to_check, dictionary);
+                    String[][] in_dictionary_test4 = search_word_or_number(to_check);
                     String[][] reference_test4 = search_word_or_number(to_check, reference_list_test4);
 
                     System.out.print("\nArguments: ");
@@ -332,7 +332,7 @@ public class SimpleSortedInsert {
         dictionary.insert(word);
     }
 
-    private void write_to_file(String file_name) throws IOException {
+    void write_to_file(String file_name) throws IOException {
 
         PrintWriter outputStream = new PrintWriter(root + "/Files/" + file_name + ".txt", "UTF-8");
         while(dictionary.hasNext()){
@@ -341,7 +341,7 @@ public class SimpleSortedInsert {
         outputStream.close();
     }
 
-    public String[][] search_word_or_number (String[] input, SkipList dictionary) {
+    public String[][] search_word_or_number (String[] input) {
 
         int max_size = 10;
         for (String arg : args) {
