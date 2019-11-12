@@ -1,6 +1,6 @@
 # Linkdictionary
 
-### Instructions 
+## Instructions 
 - Create a JAVA project that creates a sorted dictionary of words using linked lists and that can be executed from the command prompt accepting arguments, one of which will trigger a test using a previously sorted file as a reference.
 
 * **Functionalities** :
@@ -27,7 +27,6 @@
     * Main Class to execute from command prompt ```src/LinkedList.java```. (this is necessary because of intelliJ's structure)
 
 ### Possible Improvements:
-* Place the test() method into a different class and execute it
 * Write test results into a report file & timers into it
 * Differentiate in between words with caps and no caps & ignore diacritics without eliminating them
 * Change SimpleSortedDictionary.java name
@@ -36,7 +35,7 @@
 * Reduce the 2 search_user_input() methods into one efficient method
 * Find out if more efficiency is possible
     
-### SkipList Explanation
+## SkipList Explanation
 
 The SkipList implementation in this code is based on the explanation of a SkipList in [this document](shorturl.at/fhwJ1). In it, SkipLists are defined as a _"Skip lists are a probabilistic alternative to balanced trees"_, this means that despite them having a bad worst case performance, since they balance probabilistically, it is very unlikely for it to happen.
 
@@ -73,49 +72,58 @@ By placing timers, we noticed that there were two actions that slowed down the p
    SkipList implementd in program (the insert algorithm will be explained further down).  
    Using the insert method within the SkipList, there is no need for any additional operations.
 
-### Code description
+## Code description
 
-The program is run when a SimpleSortedInsert object is instantiated, and the run() method is executed.
+Following is an explanation of the Classes used:
 
-The SimpleSortedInsert class has three instance variables: 
-+ root
-+ input
-+ dictionary
+### ```Main``` and ```LinkDictionary``` classes:
 
-_input_, _dictionary_ and _root_ are initialized in the two constructor methods, the only difference is that one of the constructors requires a String array as an argument for when the code is executed from the command line.
+These are the two main classes, the Main class is for running the program in IntelliJ and the LinkDictionary class is for running it from the command prompt and accept arguments.
+In both, the program is run when a SimpleSortedInsert object is instantiated, and the run() method is executed.
 
+
+## ```SimpleSortedInsert``` class:
+
+As explained before, this class is the one that runs most of the program, it is in charge of reading the user input (including instantiating a TestForDictionarySorter object), reading the file given of unsorted words, instantiating the SkipList and inserting all the words into it (the insertion automatically sorts the words) and then of writing the SkipList into an output file.
+
+### Instance Variables: 
+```java
+    SkipList dictionary;
+    private String[] args;
+    private int maxArgs = 10;
+    Path root;
+```
+maxArgs = 10 -> Is to fulfill the requirement which states that the program only accept 10 arguments
+
+#### Constructor methods
+
+There are two constructors, one of them takes the user input as an argument and the other doesn't. In both of them _root_ is initialized.The only difference is that one of the constructors requires a String array as an argument for when the code is executed from the command line, and that string array is stored in the _args_ variable.
+
+The _root_ variable **finds the current absolute path** of the main class and then backtracks to find the Files forder accoding to the expected directory structure. Because of intelliJ's way of working, the absolute path obtained is not the same when executed from the terminal than when executed from IntelliJ, so we had to create a **conditional statement** to control for that.
+
+#### ```run()``` method
 
 The run is the basic structure of the program:
-1. If '-1' is contained in the arguments, take it out of the array and execute the testdictionary() method.
+1. If '-1' is contained in the arguments, take it out of the array and execute the testdictionary() method. Since the array is now one item smaller the maxArgs is reduced to 9. This way the program detects 1 '-1' input and the rest just print out "Negative index invalid"
 2. Given a file name, the unsorted file is read (and then sorted into a LinkedList called dictionary in another method). 
 3. Given an output file name, the output file is written with the sorted dictionary.
 4. If there are any arguments from the command line, they are taken into account in search_word_or_number() and the returned array is printed and the output is printed in the terminal.
 
-Following is an explanation of the methods:
-
 #### ```testDictionary()``` method
+
+This method instantiates a TestForDictionarySorter object and executes the performTests() method, to allow the user to test whether the SimpleSortedInsert class works as expected.
 
 This method runs the program for the test file and offers the user 5 different tests to check whether the program works correctly.  
 1) Test 1: Checks all words in the test file against the file generated by the program, it uses Scanners to read both files
 2) Test 2: Checks the test file and the dictionary generated by the program using the original user input excluding the '-1', it reads  
            the test file into a LinkedList, performs a search_user_input on both it and the dictionary and checks if they are equal.
 3) Test 3: Asks the user for some input and performs the same process as the Test 2
-4) Test 4: Asks the user for a random number and checks that amount of random positions. It it reads the test file into a LinkedList and  
+4) Test 4: Asks the user for a random number and checks that amount of random positions. It it reads the test file into a LinkedList and 
            then checks whether the words in those random indexes of the LinkedList are the same as the words in those positions in the  
            SkipList generated by the program
 
-#### ```read_file()``` method
-This method simply **finds the current absolute path** of the main class and then backtracks to find the Files forder accoding to the expected directory structure. 
-
-Because of intelliJ's way of working, the absolute path obtained is not the same when executed from the terminal than when executed from IntelliJ, so we had to create a **conditional statement** to control for that.
-
-Then this method uses a **Scanner** to read the file line by line, and execute the method ```sorted_insert(String word)``` on every word so that it is inserted into is correct possition in the dictionary.
-
-In this method, there is some **commented code** that allowed us to measure how long the program takes to order the array.
-
-##### ```sorted_insert(String word)``` method
-Executes the insert() method in the SkipList();
-
+#### ```read_file(String file_name)``` method
+This method instantiates a SkipList into the instance variable called dictionary. Then it proceeeds to use a **Scanner** to read the file (with the name passed as an argument to the method) line by line, and execute the method ```dictionary.insert(String word)``` on every word so that it is inserted into is correct possition in the dictionary.
 
 #### ```write_to_file()``` method
 #### ```search_word_or_number()``` method
