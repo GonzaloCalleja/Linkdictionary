@@ -6,7 +6,6 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedList;
-import java.util.Random;
 import java.util.Scanner;
 
 
@@ -14,6 +13,7 @@ public class SimpleSortedInsert {
 
     SkipList dictionary;
     String[] args;
+    int maxArgs;
     Path root;
 
     public SimpleSortedInsert(){
@@ -23,6 +23,7 @@ public class SimpleSortedInsert {
         if (root.endsWith("src")){
             root = root.getParent();
         }
+        this.maxArgs = 10;
     }
 
     public SimpleSortedInsert(String[] args){
@@ -31,7 +32,6 @@ public class SimpleSortedInsert {
     }
 
     public void run() throws IOException {
-        // Get absolute path to unsorted dictionary
 
         if(args !=null && args.length > 0) {
             String[] temp = new String[args.length -1];
@@ -44,6 +44,7 @@ public class SimpleSortedInsert {
                             j++;
                         }
                     }
+                    this.maxArgs = 9;
                     args = temp;
                     testDictionary(args);
                     break;
@@ -51,8 +52,7 @@ public class SimpleSortedInsert {
             }
         }
 
-        String file_name_unsorted = "unsorteddict";
-        //String file_name_unsorted = "millionWords";
+        String file_name_unsorted = "unsorteddict"; // OTHER FILES: "millionwords"
         read_file(file_name_unsorted);
         String file_name_sorted = "sorteddict";
         write_to_file(file_name_sorted);
@@ -67,246 +67,11 @@ public class SimpleSortedInsert {
                 System.out.println(element[0] + " " + element[1]);
             }
         }
-
     }
 
     private void testDictionary(String[] args) throws IOException {
-        System.out.println();
-        System.out.println("***");
-        System.out.println("*****");
-        System.out.println("***********");
-        System.out.println("******************");
-        System.out.println("*********************");
-        System.out.println("TEST MODE ACTIVATED");
-        boolean testing = true;
-
-        File f1 = new File(root + "/Files/" + "sortedDictTest" + ".txt");
-
-        String file_name_unsorted = "unsortedDictTest";
-        read_file(file_name_unsorted);
-        String file_name_sorted = "sorted_to_test";
-        write_to_file(file_name_sorted);
-
-        File f2 = new File(root + "/Files/" + file_name_sorted + ".txt");
-
-        while (testing){
-            Scanner scan_reference = new Scanner(f1);
-            Scanner scan_sorted_by_program = new Scanner(f2);
-
-            System.out.println();
-            System.out.println("There are 4 possible tests, press the number to indicate which one you want:");
-            System.out.println("1) Check entire test file word by word");
-            System.out.println("2) Check with all arguments you already inputted");
-            System.out.println("3) Check with specific words or indexes you are interested in - user input wil be requested");
-            System.out.println("4) Check random words - the number of words will be given by the user");
-            System.out.println("5) Check program execution times with 10,000 words & 100,000 words");
-            System.out.println("  -- To exit & continue with the program type '-1' --");
-            Scanner user = new Scanner(System.in);
-            String test = user.next();
-
-            switch (test){
-                case "1":
-
-                    // Check 10,000 words of one dictionary to the other
-                    System.out.println("TEST 1: Checking all 10,000 words are equal...\n");
-                    boolean test1 = true;
-                    int line = 0;
-                    while(scan_reference.hasNext() || scan_sorted_by_program.hasNext()){
-                        line++;
-                        String reference = "null";
-                        if(!scan_reference.hasNext()){
-                            System.out.println("The dictionary created by the program has more words than the test dictionary.");
-                            System.out.println("Following are the missing words:");
-                            test1 = false;
-                        }else{
-                            reference = scan_reference.next();
-                        }
-
-                        String in_dictionary = "null";
-                        if(!scan_sorted_by_program.hasNext()){
-                            System.out.println("The dictionary created by the program is shorter than the test dictionary.");
-                            System.out.println("Following are the missing words:");
-                            test1 = false;
-                        }else{
-                            in_dictionary = scan_sorted_by_program.next();
-                        }
-
-                        // To allow for incorrectly ordered caps - in reference file they are ordered inconsistently
-                        //if (!reference.equals(in_dictionary)){
-                        if (reference.compareToIgnoreCase(in_dictionary) != 0){
-                            System.out.print("Error");
-                            System.out.println(" -> Correct:" + reference + " - Incorrect:" + in_dictionary + " index: " + line);
-                            test1 = false;
-                        }
-                    }
-                    if (test1) System.out.println("\nTEST 1: Completed successfully");
-                    else System.out.println("\nTEST 1: Not completed successfully, check the code to see where the mistake is");
-
-                    break;
-                case "2":
-
-                    // Check original user input
-                    boolean test2 = true;
-                    System.out.println("TEST 2: Checking whether the arguments (excluding -1) you inputted are correctly positioned in the dictionary");
-
-                    String[][] in_dictionary_test2 = search_word_or_number(args);
-
-                    LinkedList<String> reference_list_test2 = new LinkedList<String>();
-                    while(scan_reference.hasNext()){
-                        reference_list_test2.add(scan_reference.next());
-                    }
-                    String[][] reference_test2 = search_word_or_number(args, reference_list_test2);
-
-                    System.out.print("\nArguments: ");
-                    for (String arg: args){
-                        System.out.print(arg + "  ");
-                    }
-                    System.out.println("\n");
-
-                    for (int i=0; i<args.length ; i++){
-                        // To allow for incorrectly ordered caps - in reference file they are ordered inconsistently
-                        if (!reference_test2[i][1].equals(in_dictionary_test2[i][1]) || !reference_test2[i][0].equals(in_dictionary_test2[i][0]) ){
-                        //if (reference[i][1].compareToIgnoreCase(in_dictionary[i][1]) != 0){
-                            System.out.print("Error");
-                            System.out.println(" -> Correct: " + reference_test2[i][0] + " - " + reference_test2[i][1] + " Incorrect: " + in_dictionary_test2[i][0] + " - " +  in_dictionary_test2[i][1]);
-                            test2 = false;
-                        }
-                        else{
-                            System.out.println(reference_test2[i][0] + " - " + reference_test2[i][1] + " is correctly sorted");
-                        }
-                    }
-
-                    if (test2) System.out.println("\nTEST 2: Completed successfully");
-                    else System.out.println("\nTEST 2: Not completed successfully, check the code to see where the mistake is");
-
-                    break;
-                case "3":
-
-                    // Check specific values the user is interested in
-                    boolean test3 = true;
-                    System.out.println("TEST 3: Please input some additional specific words or indexes separated by whitespaces that you want checked");
-                    System.out.println("Type '-1' to skip this test");
-
-                    user.nextLine();
-                    String[] input = user.nextLine().split(" ");
-
-                    String[][] in_dictionary_test3 = search_word_or_number(input);
-
-                    LinkedList<String> reference_list_test3 = new LinkedList<String>();
-                    while(scan_reference.hasNext()){
-                        reference_list_test3.add(scan_reference.next());
-                    }
-                    String[][] reference_test3 = search_word_or_number(input, reference_list_test3);
-
-                    System.out.print("\nArguments: ");
-                    for (String arg: input){
-                        System.out.print(arg + "  ");
-                    }
-                    System.out.println("\n");
-
-                    for (int i=0; i<input.length ; i++){
-                        // To allow for incorrectly ordered caps - in reference file they are ordered inconsistently
-                        if (!reference_test3[i][1].equals(in_dictionary_test3[i][1])){
-                            //if (reference[i][1].compareToIgnoreCase(in_dictionary[i][1]) != 0){
-                            System.out.print("Error");
-                            System.out.println(" -> Correct: " + reference_test3[i][0] + " - " + reference_test3[i][1] + " Incorrect: " + in_dictionary_test3[i][0] + " - " +  in_dictionary_test3[i][1]);
-                            test3 = false;
-                        }
-                        else{
-                            System.out.println(reference_test3[i][0] + " - " + reference_test3[i][1] + " is correctly sorted");
-                        }
-                    }
-
-                    if (test3) System.out.println("\nTEST 3: Completed successfully");
-                    else System.out.println("\nTEST 3: Not completed successfully, check the code to see where the mistake is");
-
-                    break;
-                case "4":
-
-                    // Check random values with the user inputting the number to search
-                    boolean test4 = true;
-                    System.out.println("TEST 4: Please input a number of random words you want to be checked.");
-                    System.out.println("Type '-1' to skip this test");
-                    String number_input = user.next();
-                    String regex = "\\d+";
-                    int number = 0;
-                    if (number_input.matches(regex)) number = Integer.parseInt(number_input);
-                    else{
-                        System.out.println("Please introduce a positive number");
-                        continue;
-                    }
-
-                    LinkedList<String> reference_list_test4 = new LinkedList<String>();
-                    while(scan_reference.hasNext()){
-                        reference_list_test4.add(scan_reference.next());
-                    }
-
-                    Random random = new Random();
-                    String[] to_check = new String[number];
-                    for(int i=0; i<number; i++){
-                        String index = Integer.toString(random.nextInt(reference_list_test4.size()));
-                        to_check[i] = index;
-                    }
-
-                    String[][] in_dictionary_test4 = search_word_or_number(to_check);
-                    String[][] reference_test4 = search_word_or_number(to_check, reference_list_test4);
-
-                    System.out.print("\nArguments: ");
-                    for (String arg: to_check){
-                        System.out.print(arg + "  ");
-                    }
-                    System.out.println("\n");
-
-                    for (int i=0; i<to_check.length ; i++){
-                        // To allow for incorrectly ordered caps - in reference file they are ordered inconsistently
-                        if (!reference_test4[i][1].equals(in_dictionary_test4[i][1])){
-                            //if (reference[i][1].compareToIgnoreCase(in_dictionary[i][1]) != 0){
-                            System.out.print("Error");
-                            System.out.println(" -> Correct: " + reference_test4[i][0] + " - " + reference_test4[i][1] + " Incorrect: " + in_dictionary_test4[i][0] + " - " +  in_dictionary_test4[i][1]);
-                            test4 = false;
-                        }
-                        else{
-                            System.out.println(reference_test4[i][0] + " - " + reference_test4[i][1] + " is correctly sorted");
-                        }
-                    }
-
-
-                    if (test4) System.out.println("\nTEST 4: Completed successfully");
-                    else System.out.println("\nTEST 4: Not completed successfully, check the code to see where the mistake is");
-
-                    break;
-                case "5":
-                    System.out.println("Test execution time:");
-                    long start1 = System.currentTimeMillis();
-                    // reading input from the file vs just surrounding the algorithm with timers is not noticeabl
-                    read_file("unsorteddict");
-                    //write_to_file("sorteddict"); // ads an average of 10 miliseconds
-                    long time1 = System.currentTimeMillis() - start1;
-                    System.out.println("In sorting 100,000 words: " + time1 + " miliseconds");
-
-                    long start2 = System.currentTimeMillis();
-                    // reading input from the file vs just surrounding the algorithm with timers is not noticeable
-                    read_file("unsortedDictTest");
-                    //write_to_file("sorted_to_test"); // ads an average of 10 miliseconds
-                    long time2 = System.currentTimeMillis() - start2;
-                    System.out.println("In sorting 10,000 words: " + time2 + " miliseconds");
-                    break;
-                case "-1":
-                    testing = false;
-                    break;
-                default:
-                    System.out.println("Please input a number between 1 and 4.");
-            }
-
-        }
-
-        System.out.println("TEST MODE FINISHED");
-        System.out.println("The program will now execute as normal - sorting the full unsorted dictionary - without '-1' as an argument");
-        System.out.println("*********************");
-        System.out.println("******************");
-        System.out.println("***********");
-        System.out.println("*****");
-        System.out.println("***");
+        TestForDictionarySorter tester = new TestForDictionarySorter();
+        tester.perform_tests(args);
     }
 
     public void read_file(String file_name) throws FileNotFoundException {
@@ -317,19 +82,10 @@ public class SimpleSortedInsert {
         File f = new File(dictionary_path);
         Scanner scan = new Scanner(f);
 
-        long start = System.currentTimeMillis();
         while(scan.hasNextLine()){
             String word = scan.nextLine();
-            sorted_insert(word);
+            dictionary.insert(word);
         }
-        long time = System.currentTimeMillis() - start;
-        System.out.println(time);
-
-    }
-
-
-    public void sorted_insert(String word){
-        dictionary.insert(word);
     }
 
     void write_to_file(String file_name) throws IOException {
@@ -343,15 +99,8 @@ public class SimpleSortedInsert {
 
     public String[][] search_word_or_number (String[] input) {
 
-        int max_size = 10;
-        for (String arg : args) {
-            if (arg.equals("-1")) {
-                max_size = 9;
-            }
-        }
-
         int size = input.length;
-        if (size > max_size) {
+        if (size > maxArgs) {
             System.out.println("The maximum number of inputs is 10 or 9 on top of '-1'");
             System.out.print("Inputs read: ");
             size = 10;
@@ -359,7 +108,6 @@ public class SimpleSortedInsert {
                 System.out.print(input[i] + " ");
             }
             System.out.println();
-
         }
         String regex = "\\d+";
         String[][] result = new String[size][2];
@@ -389,15 +137,8 @@ public class SimpleSortedInsert {
 
     public String[][] search_word_or_number (String[] input, LinkedList<String> dictionary) {
 
-        int max_size = 10;
-        for (String arg : args) {
-            if (arg.equals("-1")) {
-                max_size = 9;
-            }
-        }
-
         int size = input.length;
-        if (size > max_size) {
+        if (size > maxArgs) {
             System.out.println("The maximum number of inputs is 10 or 9 on top of '-1'");
             System.out.print("Inputs read: ");
             size = 10;
@@ -405,7 +146,6 @@ public class SimpleSortedInsert {
                 System.out.print(input[i] + " ");
             }
             System.out.println();
-
         }
         String regex = "\\d+";
         String[][] result = new String[size][2];

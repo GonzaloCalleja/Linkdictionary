@@ -45,7 +45,7 @@ class SkipList{
 
     public int indexOf(String data){
         SkipNode current = head;
-        for (int i=0; i<size; i++){
+        for (int i=0; i<=size; i++){
             if(data.compareToIgnoreCase(current.value) == 0) return i;
             else current = current.forward[0];
         }
@@ -118,10 +118,12 @@ class SkipList{
     public void reset_iterator(){
         iterator = head;
     }
+
     public boolean hasNext() {
         if(iterator.forward[0] != null) return true;
         else return false;
     }
+
     public SkipNode next() {
         iterator = iterator.forward[0];
         return iterator;
