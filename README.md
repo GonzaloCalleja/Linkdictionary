@@ -38,7 +38,7 @@
     
 ### SkipList Explanation
 
-The SkipList implementation in this code is based on the explanation of a SkipList in [this](shorturl.at/fhwJ1) document. In it, SkipLists are defined as a _"Skip lists are a probabilistic alternative to balanced trees"_, this means that despite them having a bad worst case performance, since they balance probabilistically, it is very unlikely for it to happen.
+The SkipList implementation in this code is based on the explanation of a SkipList in [this document](shorturl.at/fhwJ1). In it, SkipLists are defined as a _"Skip lists are a probabilistic alternative to balanced trees"_, this means that despite them having a bad worst case performance, since they balance probabilistically, it is very unlikely for it to happen.
 
 The idea behind this list is to have the nodes in it have pointers to nodes further ahead, so that to insert a new value, there is no need to examine every node in the list, you can "skip" ahead in the least until you find the right position. The number of pointers a node has is chosen randomly depending on a probability p=0.25. This is because if for example every (2^i)th node had a pointer 2^i ahead, the number of nodes that must be examined can be reduced to log2 while only doubling the number of pointers. This data structure could be used for fast searching, but insertion and deletion would be impractical. So, defining a "level" as the number of foward pointers a node has, the solution to this is to randomize the level so that it maintains the proportions of 50% of the nodes being level 1, 25% of the nodes being level 2, 12,5% of the nodes being level 3 and so on. This way, insertions only require local modifications, since the level of a node once an insertion has been made does not need to change. Some arrangements of levels would give poor execution times, but we will see that such arrangements are rare.
 
@@ -49,6 +49,8 @@ SkipList Visualization:
 ### Program progress - improved search algorithm using timers
 
 By placing timers, we noticed that there were two actions that slowed down the program: Firslty, accesses to the LinkedList, especially when not using iterators, so we eliminated as many of these as possible. Secondly, the insertion algorithm due to the fact that it had to be executed as many times as there are words, so we concentrated on making it as efficient as possible, here is how:
+(time is calculated on executing the 100,000 word file)
+(The variance in time is due to different execution tasks in different computers and because there were other processes running parallel to the program in the computers)
 
 1) Iteration 1: 100 - 120 secs:  
    Find if the word should be at the begining or the end of the LinkedList and insert it directly.  
