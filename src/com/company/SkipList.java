@@ -10,11 +10,12 @@ class SkipList{
     private SkipNode iterator;
 
     SkipNode head;
-    int level = 1;
+    int level;
     int size;
 
     public SkipList(){
         String smallest_string = "";
+        this.level = 1;
         this.head= new SkipNode(level, smallest_string);
         this.iterator = this.head;
         this.size = 0;

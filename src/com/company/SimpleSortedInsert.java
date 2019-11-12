@@ -12,18 +12,18 @@ import java.util.Scanner;
 public class SimpleSortedInsert {
 
     SkipList dictionary;
-    String[] args;
-    int maxArgs;
+    private String[] args;
+    private int maxArgs = 10;
     Path root;
 
     public SimpleSortedInsert(){
-        this.dictionary = new SkipList();
+        //this.dictionary = new SkipList();
         root = Paths.get("").normalize().toAbsolutePath();
 
         if (root.endsWith("src")){
             root = root.getParent();
         }
-        this.maxArgs = 10;
+        //this.maxArgs = 10;
     }
 
     public SimpleSortedInsert(String[] args){
@@ -38,9 +38,9 @@ public class SimpleSortedInsert {
             for (String arg : args) {
                 if (arg.equals("-1")) {
                     int j = 0;
-                    for (int i=0; i<args.length; i++) {
-                        if (!args[i].equals("-1")){
-                            temp[j] = args[i];
+                    for (String argument: args) {
+                        if (!argument.equals("-1")){
+                            temp[j] = argument;
                             j++;
                         }
                     }
@@ -88,7 +88,7 @@ public class SimpleSortedInsert {
         }
     }
 
-    void write_to_file(String file_name) throws IOException {
+    public void write_to_file(String file_name) throws IOException {
 
         PrintWriter outputStream = new PrintWriter(root + "/Files/" + file_name + ".txt", "UTF-8");
         while(dictionary.hasNext()){
@@ -109,21 +109,22 @@ public class SimpleSortedInsert {
             }
             System.out.println();
         }
-        String regex = "\\d+";
+        String regex = "-?\\d+";
         String[][] result = new String[size][2];
 
         for (int i = 0; i < size; i++) {
             if(input[i].matches(regex)){
                 int word_position = Integer.parseInt(input[i]) ;
-
-                try {
-                    String word = dictionary.getValue(word_position - 1);
-                    result[i][0] = Integer.toString(word_position);
-                    result[i][1] = word;
-                } catch (IndexOutOfBoundsException e) {
-                    result[i][0] = Integer.toString(word_position);
-                    result[i][1] = "Index not in dictionary";
-                }
+                if (word_position < 0) System.out.println("Negative index invalid");
+                else
+                    try {
+                        String word = dictionary.getValue(word_position - 1);
+                        result[i][0] = Integer.toString(word_position);
+                        result[i][1] = word;
+                    } catch (IndexOutOfBoundsException e) {
+                        result[i][0] = Integer.toString(word_position);
+                        result[i][1] = "Index not in dictionary";
+                    }
             }else{
                 int word_position = dictionary.indexOf(input[i]);
                 if (word_position != -1) result[i][0] = Integer.toString(word_position);
