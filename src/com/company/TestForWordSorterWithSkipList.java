@@ -3,9 +3,7 @@ package com.company;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.ListIterator;
-import java.util.Scanner;
+import java.util.*;
 
 public class TestForWordSorterWithSkipList {
 
@@ -18,52 +16,64 @@ public class TestForWordSorterWithSkipList {
 
     public TestForWordSorterWithSkipList(String unsortedDictTest_name, String sortedDictTest_name, String sorted_to_test_name) throws IOException {
 
+        /*
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Please indicate which files you want to use for the test:");
+        System.out.println(" - input '1' to use the default tests ( 'sortedDictTest.txt' and 'unsortedDictTest.txt' ). - ");
+        String input = scan.next();
+
+         */
+
         this.sorter = new WordSorterWithSkipList();
         sorter.readFileAndSortedInsertInSkipList(unsortedDictTest_name);
         sorter.writeListIntoFile(sorted_to_test_name);
 
         this.correct_dictionary = new LinkedList<String>();
-        Scanner read_file = new Scanner(new File(sorter.projectFolderPath + "/Files/" + sortedDictTest_name + ".txt"));
-        while(read_file.hasNext()) this.correct_dictionary.add(read_file.nextLine());
+        Scanner read_file = new Scanner(new File(sorter.projectFolderPath + "/" + sortedDictTest_name + ".txt"));
+        while(read_file.hasNext())
+            this.correct_dictionary.add(read_file.nextLine());
 
     }
 
     public void allowUserToPerformTests(String[] args) throws FileNotFoundException {
 
-        prints_start_menu();
+        printStartTestModeMessage();
 
         boolean testing = true;
         Scanner user = new Scanner(System.in);
         while (testing) {
 
-            prints_menu();
+            printTestMenu();
             String test = user.next();
 
             switch (test) {
                 case "1":
-                    test1_full_check();
+                    test1CompareAllWords();
                     break;
                 case "2":
-                    test2_args_check(args);
+                    test2CompareWithPreviousUserInput(args);
                     break;
                 case "3":
-                    test3_other_args_check(user);
+                    test3CompareWithNewUserInput(user);
                     break;
                 case "4":
-                    test4_check_random_positions(user);
+                    test4CompareRandomPositions(user);
                     break;
                 case "5":
-                    test5_execution_times();
+                    test5CompareExecutionTimesForFiles();
+                    break;
+                case "6":
+                    test6AverageCompareExecutionTimes();
                     break;
                 default:
                     System.out.println("Please input a number between 1 and 4.");
             }
         }
         user.close();
-        prints_end_menu();
+        printEndTestModeMessage();
     }
 
-    private void prints_menu() {
+    private void printTestMenu() {
         System.out.println();
         System.out.println("There are 4 possible tests, press the number to indicate which one you want:");
         System.out.println("1) Check entire test file word by word");
@@ -71,9 +81,11 @@ public class TestForWordSorterWithSkipList {
         System.out.println("3) Check with specific words or indexes you are interested in - user input wil be requested");
         System.out.println("4) Check random words - the number of words will be given by the user");
         System.out.println("5) Check program execution times with 10,000 words & 100,000 words");
+        System.out.println("6) Check program execution times for 100 iterations of the program");
         System.out.println("  -- To exit & continue with the program type '-1' --");
     }
-    private void prints_end_menu() {
+
+    private void printEndTestModeMessage() {
         System.out.println("TEST MODE FINISHED");
         System.out.println("The program will now execute as normal - sorting the full unsorted dictionary - without '-1' as an argument");
         System.out.println("*********************");
@@ -82,7 +94,7 @@ public class TestForWordSorterWithSkipList {
         System.out.println("*****");
         System.out.println("***");
     }
-    private void prints_start_menu() {
+    private void printStartTestModeMessage() {
         System.out.println();
         System.out.println("***");
         System.out.println("*****");
@@ -92,14 +104,39 @@ public class TestForWordSorterWithSkipList {
         System.out.println("TEST MODE ACTIVATED");
     }
 
+    private boolean compareGivenArguments(String[] args) {
+        boolean test = true;
+        String[][] in_dictionary_test2 = sorter.searchWordOrIndexInDictionary(args, this.sorter.dictionary);
+        String[][] reference_test2 = sorter.searchWordOrIndexInDictionary(args, correct_dictionary);
 
-    private boolean test1_full_check() {
+        System.out.print("\nArguments: ");
+        for (String arg: args)
+            System.out.print(arg + "  ");
+
+        System.out.println("\n");
+
+        for (int i=0; i<args.length ; i++){
+            // To allow for incorrectly ordered caps - in reference file they are ordered inconsistently
+            if (!reference_test2[i][1].equals(in_dictionary_test2[i][1]) || !reference_test2[i][0].equals(in_dictionary_test2[i][0]) ){
+                //if (reference[i][1].compareToIgnoreCase(in_dictionary[i][1]) != 0){
+                System.out.print("Error");
+                System.out.println(" -> Correct: " + reference_test2[i][0] + " - " + reference_test2[i][1] + " Incorrect: " + in_dictionary_test2[i][0] + " - " +  in_dictionary_test2[i][1]);
+                test = false;
+            }
+            else{
+                System.out.println(reference_test2[i][0] + " - " + reference_test2[i][1] + " is correctly sorted");
+            }
+        }
+        return test;
+    }
+
+    private boolean test1CompareAllWords() {
 
         // Check 10,000 words of one dictionary to the other
         System.out.println("TEST 1: Checking all words in both files are equal...\n");
         boolean test = true;
         int line = 0;
-        sorter.dictionary.reset_iterator();
+        sorter.dictionary.resetIterator();
 
         ListIterator<String> correct_iterator = correct_dictionary.listIterator();
 
@@ -138,7 +175,7 @@ public class TestForWordSorterWithSkipList {
 
             // To allow for incorrectly ordered caps - in reference file they are ordered inconsistently
             if (!reference.toLowerCase().equals(in_dictionary.toLowerCase())){
-            //if (reference.compareToIgnoreCase(in_dictionary) != 0) {
+                //if (reference.compareToIgnoreCase(in_dictionary) != 0) {
                 System.out.print("Error");
                 System.out.println(" -> Correct: " + reference + " - Incorrect: " + in_dictionary + " index: " + line);
                 test = false;
@@ -150,12 +187,12 @@ public class TestForWordSorterWithSkipList {
         return test;
     }
 
-    private boolean test2_args_check(String[] args){
+    private boolean test2CompareWithPreviousUserInput(String[] args){
 
         // Check original user input
         System.out.println("TEST 2: Checking whether the arguments (excluding -1) you inputted are correctly positioned in the dictionary");
 
-        boolean test = args_test(args);
+        boolean test = compareGivenArguments(args);
 
         if (test) System.out.println("\nTEST 2: Completed successfully");
         else System.out.println("\nTEST 2: Not completed successfully, check the code to see where the mistake is");
@@ -163,34 +200,7 @@ public class TestForWordSorterWithSkipList {
         return test;
     }
 
-    private boolean args_test(String[] args) {
-        boolean test = true;
-        String[][] in_dictionary_test2 = sorter.searchWordOrIndexInDictionary(args, sorter.dictionary);
-        // WEIRD - should be changed
-        String[][] reference_test2 = sorter.searchWordOrIndexInDictionary(args, correct_dictionary);
-
-        System.out.print("\nArguments: ");
-        for (String arg: args){
-            System.out.print(arg + "  ");
-        }
-        System.out.println("\n");
-
-        for (int i=0; i<args.length ; i++){
-            // To allow for incorrectly ordered caps - in reference file they are ordered inconsistently
-            if (!reference_test2[i][1].equals(in_dictionary_test2[i][1]) || !reference_test2[i][0].equals(in_dictionary_test2[i][0]) ){
-                //if (reference[i][1].compareToIgnoreCase(in_dictionary[i][1]) != 0){
-                System.out.print("Error");
-                System.out.println(" -> Correct: " + reference_test2[i][0] + " - " + reference_test2[i][1] + " Incorrect: " + in_dictionary_test2[i][0] + " - " +  in_dictionary_test2[i][1]);
-                test = false;
-            }
-            else{
-                System.out.println(reference_test2[i][0] + " - " + reference_test2[i][1] + " is correctly sorted");
-            }
-        }
-        return test;
-    }
-
-    private boolean test3_other_args_check(Scanner user){
+    private boolean test3CompareWithNewUserInput(Scanner user){
         // Check specific values the user is interested in
         System.out.println("TEST 3: Please input some additional specific words or indexes separated by whitespaces that you want checked");
         System.out.println("Type '-1' to skip this test");
@@ -198,7 +208,7 @@ public class TestForWordSorterWithSkipList {
         user.nextLine();
         String[] input = user.nextLine().split(" ");
 
-        boolean test = args_test(input);
+        boolean test = compareGivenArguments(input);
 
         if (test) System.out.println("\nTEST 3: Completed successfully");
         else System.out.println("\nTEST 3: Not completed successfully, check the code to see where the mistake is");
@@ -206,7 +216,7 @@ public class TestForWordSorterWithSkipList {
         return test;
     }
 
-    private boolean test4_check_random_positions(Scanner user) {
+    private boolean test4CompareRandomPositions(Scanner user) {
         // Check random values with the user inputting the number to search
         boolean test = true;
         System.out.println("TEST 4: Please input a number of random words you want to be checked.");
@@ -226,7 +236,7 @@ public class TestForWordSorterWithSkipList {
             to_check[i] = index;
         }
 
-        test = args_test(to_check);
+        test = compareGivenArguments(to_check);
         if (test) System.out.println("\nTEST 4: Completed successfully");
         else System.out.println("\nTEST 4: Not completed successfully, check the code to see where the mistake is");
 
@@ -234,7 +244,8 @@ public class TestForWordSorterWithSkipList {
 
     }
 
-    private void test5_execution_times() throws FileNotFoundException {
+    // Change to accept file names
+    private void test5CompareExecutionTimesForFiles() throws FileNotFoundException {
         System.out.println("TEST 5: Test execution time.");
 
         long start1 = System.currentTimeMillis();
@@ -252,14 +263,31 @@ public class TestForWordSorterWithSkipList {
         System.out.println("In sorting 10,000 words: " + time2 + " miliseconds");
     }
 
+    private void test6AverageCompareExecutionTimes() throws FileNotFoundException {
+        System.out.println("TEST 5: Test execution time.");
+
+        long average = 0;
+        for(int i=0; i< 100; i++){
+            long start1 = System.currentTimeMillis();
+            sorter.readFileAndSortedInsertInSkipList("unsorteddict");
+            long time1 = System.currentTimeMillis() - start1;
+            average += time1;
+        }
+        average = average / 100;
+        System.out.println("The average time of 100 tests for 100,000 words is: " + average + " miliseconds");
+
+    }
+
     public static void main(String[] args){
-        // place prints here?
         TestForWordSorterWithSkipList tester = null;
         try {
             tester = new TestForWordSorterWithSkipList();
             tester.allowUserToPerformTests(args);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
 }

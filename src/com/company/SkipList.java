@@ -1,5 +1,6 @@
 package com.company;
 
+import java.text.Normalizer;
 import java.util.LinkedList;
 
 class SkipList extends LinkedList {
@@ -50,7 +51,7 @@ class SkipList extends LinkedList {
         return current.forward[0].value;
     }
 
-    public void insert(String data){
+    public void sortedInsert(String data){
         SkipNode current = head;
         SkipNode[] nodesToUpdate = new SkipNode[MaxLevel];
         int newNodeLevel = randomLevel();
@@ -67,7 +68,7 @@ class SkipList extends LinkedList {
                 if(current.forward[i] == null)
                     break;
 
-                if(data.compareToIgnoreCase(current.forward[i].value) > 0)
+                if(newNode.special.compareTo(current.forward[i].special) > 0)
                     current = current.forward[i];
                 else
                     terminate = true;
@@ -94,7 +95,7 @@ class SkipList extends LinkedList {
         }
     }
 
-    public void reset_iterator(){
+    public void resetIterator(){
         iterator = head;
     }
 
@@ -112,9 +113,12 @@ class SkipList extends LinkedList {
         SkipNode[] forward;
         int level;
         String value;
+        String special;
 
         public SkipNode(int level, String data){
             this.value = data;
+            this.special = Normalizer.normalize(data, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+
             this.level = level;
             this.forward = new SkipNode[this.level];
 

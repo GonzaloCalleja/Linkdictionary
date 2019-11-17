@@ -84,7 +84,7 @@ public class WordSorterWithSkipList {
 
         while(scan.hasNextLine()){
             String word = scan.nextLine();
-            dictionary.insert(word);
+            dictionary.sortedInsert(word);
         }
     }
 
