@@ -1,17 +1,19 @@
 package com.company;
 
-class SkipList{
+import java.util.LinkedList;
+
+class SkipList extends LinkedList {
 
     private int MaxLevel;
-    private int maxLevelFrontier;
+    private int numOfElementsWithMaxLevel;
     // for more consistent results than with 0.25
     private double p = 0.5;
 
     private SkipNode iterator;
 
-    SkipNode head;
-    int level;
-    int size;
+    private SkipNode head;
+    private int level;
+    private int size;
 
     public SkipList(){
         String smallest_string = "";
@@ -24,95 +26,71 @@ class SkipList{
     }
 
     private void newFrontier(){
-        maxLevelFrontier = (int) Math.pow(2, MaxLevel);
+        MaxLevel++;
+        numOfElementsWithMaxLevel = (int) Math.pow(2, MaxLevel);
     }
 
     private int randomLevel(){
         int lvl = 1;
-
-        while (Math.random()<p && lvl < MaxLevel){
+        while (Math.random()<p && lvl < MaxLevel)
             lvl++;
-        }
 
         return lvl;
     }
 
-    public String getValue(int index){
-        if (index > size) return null;
+    public String get(int index){
         SkipNode current = head;
-        for (int i=0; i<index; i++)current = current.forward[0];
+
+        if (index > size)
+            return null;
+
+        for (int i=0; i<index; i++)
+            current = current.forward[0];
+
         return current.forward[0].value;
     }
 
-    public int indexOf(String data){
-        SkipNode current = head;
-        for (int i=0; i<=size; i++){
-            if(data.compareToIgnoreCase(current.value) == 0) return i;
-            else current = current.forward[0];
-        }
-        return -1;
-    }
-
-    public SkipNode search(String data){
-        SkipNode current = head;
-        SkipNode result = null;
-
-        for (int i = current.level-1; i >= 0; i--) {
-            boolean terminate = false;
-            while(!terminate){
-                if(current.forward[i] == null) break;
-
-                if(data.compareToIgnoreCase(current.forward[i].value) == 0){
-                    result = current.forward[i];
-                }else terminate = true;
-            }
-        }
-
-        return result;
-    }
-
     public void insert(String data){
+        SkipNode current = head;
+        SkipNode[] nodesToUpdate = new SkipNode[MaxLevel];
+        int newNodeLevel = randomLevel();
+        SkipNode newNode = new SkipNode(newNodeLevel, data);
+
         size++;
 
-        if(size >= maxLevelFrontier){
-            MaxLevel++;
+        if(size >= numOfElementsWithMaxLevel)
             newFrontier();
-        }
-
-        SkipNode current = head;
-        SkipNode[] update = new SkipNode[MaxLevel];
 
         for (int i = current.level-1; i >= 0; i--) {
             boolean terminate = false;
             while(!terminate){
-                if(current.forward[i] == null) break;
+                if(current.forward[i] == null)
+                    break;
 
-                if(data.compareToIgnoreCase(current.forward[i].value) > 0){
+                if(data.compareToIgnoreCase(current.forward[i].value) > 0)
                     current = current.forward[i];
-                }else terminate = true;
+                else
+                    terminate = true;
             }
-            update[i] = current;
+            nodesToUpdate[i] = current;
         }
 
-        int level = randomLevel();
-
-        if(level > this.level){
-            SkipNode[] new_head_forwards = new SkipNode[level];
-            for(int i=0; i<this.level; i++){
+        if(newNodeLevel > this.level){
+            SkipNode[] new_head_forwards = new SkipNode[newNodeLevel];
+            for(int i=0; i<this.level; i++)
                 new_head_forwards[i] = head.forward[i];
-            }
-            for(int i=this.level; i<level; i++){
-                update[i] = head;
-            }
-            head.level = level;
-            head.forward = new_head_forwards;
-            this.level = level;
-        }
-        SkipNode toadd = new SkipNode(level, data);
 
-        for(int i=0; i<level; i++){
-            toadd.forward[i] = update[i].forward[i];
-            update[i].forward[i] = toadd;
+            for(int i=this.level; i<newNodeLevel; i++)
+                nodesToUpdate[i] = head;
+
+            head.level = newNodeLevel;
+            head.forward = new_head_forwards;
+            this.level = newNodeLevel;
+        }
+
+        for(int i=0; i<newNodeLevel; i++){
+            newNode.forward[i] = nodesToUpdate[i].forward[i];
+            nodesToUpdate[i].forward[i] = newNode;
         }
     }
 
@@ -128,5 +106,18 @@ class SkipList{
     public SkipNode next() {
         iterator = iterator.forward[0];
         return iterator;
+    }
+
+    public class SkipNode {
+        SkipNode[] forward;
+        int level;
+        String value;
+
+        public SkipNode(int level, String data){
+            this.value = data;
+            this.level = level;
+            this.forward = new SkipNode[this.level];
+
+        }
     }
 }

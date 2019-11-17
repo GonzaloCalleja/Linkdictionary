@@ -7,28 +7,28 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Scanner;
 
-public class TestForDictionarySorter {
+public class TestForWordSorterWithSkipList {
 
-    SimpleSortedInsert sorter;
+    WordSorterWithSkipList sorter;
     LinkedList<String> correct_dictionary;
 
-    public TestForDictionarySorter() throws IOException {
+    public TestForWordSorterWithSkipList() throws IOException {
         this("unsortedDictTest", "sortedDictTest", "sorted_to_test");
     }
 
-    public TestForDictionarySorter(String unsortedDictTest_name, String sortedDictTest_name, String sorted_to_test_name) throws IOException {
+    public TestForWordSorterWithSkipList(String unsortedDictTest_name, String sortedDictTest_name, String sorted_to_test_name) throws IOException {
 
-        this.sorter = new SimpleSortedInsert();
-        sorter.read_file(unsortedDictTest_name);
-        sorter.write_to_file(sorted_to_test_name);
+        this.sorter = new WordSorterWithSkipList();
+        sorter.readFileAndSortedInsertInSkipList(unsortedDictTest_name);
+        sorter.writeListIntoFile(sorted_to_test_name);
 
         this.correct_dictionary = new LinkedList<String>();
-        Scanner read_file = new Scanner(new File(sorter.root + "/Files/" + sortedDictTest_name + ".txt"));
+        Scanner read_file = new Scanner(new File(sorter.projectFolderPath + "/Files/" + sortedDictTest_name + ".txt"));
         while(read_file.hasNext()) this.correct_dictionary.add(read_file.nextLine());
 
     }
 
-    public void perform_tests(String[] args) throws FileNotFoundException {
+    public void allowUserToPerformTests(String[] args) throws FileNotFoundException {
 
         prints_start_menu();
 
@@ -165,9 +165,9 @@ public class TestForDictionarySorter {
 
     private boolean args_test(String[] args) {
         boolean test = true;
-        String[][] in_dictionary_test2 = sorter.search_word_or_number(args);
+        String[][] in_dictionary_test2 = sorter.searchWordOrIndexInDictionary(args, sorter.dictionary);
         // WEIRD - should be changed
-        String[][] reference_test2 = sorter.search_word_or_number(args, correct_dictionary);
+        String[][] reference_test2 = sorter.searchWordOrIndexInDictionary(args, correct_dictionary);
 
         System.out.print("\nArguments: ");
         for (String arg: args){
@@ -239,14 +239,14 @@ public class TestForDictionarySorter {
 
         long start1 = System.currentTimeMillis();
         // reading input from the file vs just surrounding the algorithm with timers is not noticeabl
-        sorter.read_file("unsorteddict");
+        sorter.readFileAndSortedInsertInSkipList("unsorteddict");
         //write_to_file("sorteddict"); // ads an average of 10 miliseconds
         long time1 = System.currentTimeMillis() - start1;
         System.out.println("In sorting 100,000 words: " + time1 + " miliseconds");
 
         long start2 = System.currentTimeMillis();
         // reading input from the file vs just surrounding the algorithm with timers is not noticeable
-        sorter.read_file("unsortedDictTest");
+        sorter.readFileAndSortedInsertInSkipList("unsortedDictTest");
         //write_to_file("sorted_to_test"); // ads an average of 10 miliseconds
         long time2 = System.currentTimeMillis() - start2;
         System.out.println("In sorting 10,000 words: " + time2 + " miliseconds");
@@ -254,10 +254,10 @@ public class TestForDictionarySorter {
 
     public static void main(String[] args){
         // place prints here?
-        TestForDictionarySorter tester = null;
+        TestForWordSorterWithSkipList tester = null;
         try {
-            tester = new TestForDictionarySorter();
-            tester.perform_tests(args);
+            tester = new TestForWordSorterWithSkipList();
+            tester.allowUserToPerformTests(args);
         } catch (IOException e) {
             e.printStackTrace();
         }

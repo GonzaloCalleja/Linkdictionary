@@ -80,9 +80,9 @@ By placing timers, we noticed that there were two actions that slowed down the p
 
 Following is an explanation of the Classes used:
 
-### ```Main``` and ```LinkDictionary``` classes:
+### ```Main``` and ```WordSorterCommandPromptMain``` classes:
 
-These are the two main classes, the Main class is for running the program in IntelliJ and the LinkDictionary class is for running it from the command prompt and accept arguments.
+These are the two main classes, the Main class is for running the program in IntelliJ and the WordSorterCommandPromptMain class is for running it from the command prompt and accept arguments.
 In both, the program is run when a SimpleSortedInsert object is instantiated, and the run() method is executed.
 
 

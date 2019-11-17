@@ -6,9 +6,7 @@ public class Main {
 
     public static void main(String[] args){
 
-        String[] a = {"Zyrtec", "-1"};
-
-        SimpleSortedInsert app = new SimpleSortedInsert(a);
+        WordSorterWithSkipList app = new WordSorterWithSkipList();
         try {
             app.run();
         } catch (IOException e) {
