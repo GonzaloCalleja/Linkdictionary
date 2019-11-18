@@ -1,4 +1,5 @@
 # Linkdictionary
+Following coding principles
 
 ## Instructions 
 
@@ -23,18 +24,14 @@
   EXPLANATION: The requirements ask for the dictionary's data structure to be a LinkedList but due to this objects structure this requirement limits the maximum speed the program can execute in, to aproximatelly 30 seconds for 100,000 lines with 1 LinkedList and a relatively efficient insert and ListIterator objects to read and write to the LinkList. The execution time is so slow because using algorithms that would have a O(Log(n)) time complexity in ArrayList and other data structures take O(n * Log(n)) time complexity in LinkedLists because to perform a "jump" in a LinkedList traversing through all previous nodes and takes O(N) time.
 
 * The File structure:
-    * Program Logic : ```src/com/company/SimpleSortedInsert.java```.
+    * Program Logic : ```src/com/company/WordSorterWithSkipList.java```.
     * SkipList implementation: ```src/com/company/SkipList.java``` & ```src/com/company/SkipNode.java```.
     * Main Class to execute from IntelliJ: ```src/com/company/Main.java```.
-    * Main Class to execute from command prompt ```src/LinkedList.java```. (this is necessary because of intelliJ's structure)
+    * Main Class to execute from command prompt ```src/WordSorterCommandPromptMain.java```. (this is necessary because of intelliJ's structure)
 
 ### Possible Improvements:
 * Write test results into a report file & timers into it
-* Differentiate in between words with caps and no caps & ignore diacritics without eliminating them
-* Change SimpleSortedDictionary.java name
-* Add the possibility of testing with IntelliJ execution
-* Have SkipList Class extend LinkedList
-* Reduce the 2 search_user_input() methods into one efficient method
+* Differentiate in between words with caps and no caps
 * Find out if more efficiency is possible
     
 ## SkipList Explanation
@@ -86,7 +83,7 @@ These are the two main classes, the Main class is for running the program in Int
 In both, the program is run when a SimpleSortedInsert object is instantiated, and the run() method is executed.
 
 
-### ```SimpleSortedInsert``` class:
+### ```WordSorterWithSkipList``` class:
 
 As explained before, this class is the one that runs most of the program, it is in charge of reading the user input (including instantiating a TestForDictionarySorter object), reading the file given of unsorted words, instantiating the SkipList and inserting all the words into it (the insertion automatically sorts the words) and then of writing the SkipList into an output file.
 
@@ -94,27 +91,27 @@ As explained before, this class is the one that runs most of the program, it is 
 
 ```java
     SkipList dictionary;
-    private String[] args;
-    private int maxArgs = 10;
-    Path root;
+    private String[] userArgs;
+    private int maxUserArgsAllowed = 10;
+    Path projectFolderPath;
 ```
-maxArgs = 10 -> Is to fulfill the requirement which states that the program only accept 10 arguments
+maxUserArgsAllowed = 10 -> Is to fulfill the requirement which states that the program only accept 10 arguments
 
 #### Constructor methods
 
-There are two constructors, one of them takes the user input as an argument and the other doesn't. In both of them _root_ is initialized.The only difference is that one of the constructors requires a String array as an argument for when the code is executed from the command line, and that string array is stored in the _args_ variable.
+There are two constructors, one of them takes the user input as an argument and the other doesn't. In both of them _projectFolderPath_ is initialized.The only difference is that one of the constructors requires a String array as an argument for when the code is executed from the command line, and that string array is stored in the _userArgs_ variable.
 
-The _root_ variable **finds the current absolute path** of the main class and then backtracks to find the Files forder accoding to the expected directory structure. Because of intelliJ's way of working, the absolute path obtained is not the same when executed from the terminal than when executed from IntelliJ, so we had to create a **conditional statement** to control for that.
+The _projectFolderPath_ variable **finds the current absolute path** of the main class and then backtracks to find the Files forder accoding to the expected directory structure. Because of intelliJ's way of working, the absolute path obtained is not the same when executed from the terminal than when executed from IntelliJ, so we had to create a **conditional statement** to control for that.
 
 #### ```run()``` method
 
 The run is the basic structure of the program:
-1. If '-1' is contained in the arguments, take it out of the array and execute the testdictionary() method. Since the array is now one item smaller the maxArgs is reduced to 9. This way the program detects 1 '-1' input and the rest just print out "Negative index invalid"
-2. Given a file name, the unsorted file is read (and then sorted into a LinkedList called dictionary in another method). 
-3. Given an output file name, the output file is written with the sorted dictionary.
-4. If there are any arguments from the command line, they are taken into account in search_word_or_number() and the returned array is printed and the output is printed in the terminal.
+1. If '-1' is contained in the arguments, take it out of the array and execute the testdictionary() method. Since the array is now one item smaller the maxArgs is reduced to 9. This way the program detects 1 '-1' input and the rest just print out "Negative index invalid" - checkIfTestNecessaryAndPerform()
+2. Given a file name, the unsorted file is read (and then sorted into a LinkedList called dictionary in another method) - readFileAndSortedInsertInSkipList()
+3. Given an output file name, the output file is written with the sorted dictionary - writeListIntoFile()
+4. If there are any arguments from the command line, they are taken into account in printResultsFromUserArguments() and the returned array is printed and the output is printed in the terminal - printResultsFromUserArguments()
 
-#### ```testDictionary()``` method
+#### Testing the Dictionary
 
 This method instantiates a TestForDictionarySorter object and executes the performTests() method, to allow the user to test whether the SimpleSortedInsert class works as expected.
 
@@ -128,16 +125,12 @@ This method runs the program for the test file and offers the user 5 different t
            SkipList generated by the program
 5) Test 5: Run the read_file method for the 10,000 word file and for the 100,000 word file and print out the execution times for both.
 
-#### ```read_file(String file_name)``` method
+#### ```readFileAndSortedInsertInSkipList(String file_name)``` method
 
-This method instantiates a SkipList into the instance variable called dictionary. Then it proceeeds to use a **Scanner** to read the file (with the name passed as an argument to the method) line by line, and execute the method ```dictionary.insert(String word)``` on every word so that it is inserted into is correct possition in the dictionary.
+This method instantiates a SkipList into the instance variable called dictionary. Then it proceeeds to use a **Scanner** to read the file (with the name passed as an argument to the method) line by line, and execute the method ```dictionary.sortedInsert(String word)``` on every word so that it is inserted into is correct possition in the dictionary.
 
-#### ```write_to_file(String file_name)``` method
+#### ```writeListIntoFile(String file_name)``` method
 This method instantiates a PrintWriter object, prints all the contents of the dictionary into it and writes all the output into a file.
 
---THE FOLLWING 2 METHODS SHOULD ONLY BE ONE METHOD-- Their use is to read the user input (word or number) and return the possition of a word or the word in a certain position.
-
-#### ```search_word_or_number(String[] input)``` method
-
-#### ```search_word_or_number(String[] input, LinkedList<String> dictionary)``` method
+#### ```searchWordOrIndexInDictionary(String[] input, LinkedList<String> dictionary)``` method
 
